@@ -1,12 +1,19 @@
 package com.app.cc.offre;
 
-import com.app.cc.Client.Client;
-import com.app.cc.Createur.Createur;
 import com.app.cc.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
-
+@Data
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "Offre")
 public class Offre {
@@ -19,13 +26,9 @@ public class Offre {
     @Column(nullable = false)
     private OffreStatus status;
 
-    @Temporal(TemporalType.DATE)
-    private Date dateSoumission;
+    private LocalDateTime dateSoumission;
 
     @ManyToOne
-    @JoinColumn(name = "client_id")
-    private Client client;
-
-    @ManyToOne
-    @JoinColumn(name = "createur_id")
-    private Createur createur; }
+    @JsonBackReference
+    @JoinColumn(name = "user_idoffre")
+    public User useridoffre; }

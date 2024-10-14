@@ -95,63 +95,52 @@ public class AuthenticationController {
   }
   @PutMapping("/update/{id}")
   public ResponseEntity<User> updateUser(@PathVariable Long id,
-                         @RequestParam(required = false)MultipartFile image,
-                         @RequestParam(required = false) String nom,
-  @RequestParam(required = false)String prenom,
-  @RequestParam(required = false) String email,
-
-  @RequestParam(required = false) String sexe,
-  @RequestParam(required = false) String numtel,
-
-  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")
-                                           String dateNaissance ,
-  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") String dateRecrutement,
-  @RequestParam(required = false) String situationFam,
-  @RequestParam(required = false) String nbEnfant,
-  @RequestParam(required = false) String adresse,
-  @RequestParam(required = false) String service,
-  @RequestParam(required = false) String cnss,
-  @RequestParam(required = false) String rib,
-  @RequestParam(required = false)  String ncin,
-  @RequestParam(required = false) String npassport,
-  @RequestParam(required = false) String manager,
-  @RequestParam(required = false) Role role ,
-                         @RequestParam(required = false) String position
- ) throws ParseException {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    Date datenaissance = null;
-    if (dateNaissance != null) {
+                                         @RequestParam(required = false) MultipartFile image,
+                                         @RequestParam(required = false) String nom,
+                                         @RequestParam(required = false) String prenom,
+                                         @RequestParam(required = false) String email,
+                                         @RequestParam(required = false) Long numtel,
+                                         @RequestParam(required = false) String nomEntreprise,
+                                         @RequestParam(required = false) String siteWebEntreprise,
+                                         @RequestParam(required = false) String secteurActivite,
+                                         @RequestParam(required = false) String bio,
+                                         @RequestParam(required = false) String lienInsta,
+                                         @RequestParam(required = false) String lienTikTok,
+                                         @RequestParam(required = false) String categoriesContenu,
+                                         @RequestParam(required = false) Role role) {
+    // Log incoming request
+    System.out.println("Updating user with ID: " + id);
+    System.out.println("Received data: nom=" + nom + ", prenom=" + prenom + ", email=" + email + ", role=" + role);
+    System.out.println("Client fields: nomEntreprise=" + nomEntreprise + ", siteWebEntreprise=" + siteWebEntreprise + ", secteurActivite=" + secteurActivite);
+    System.out.println("Creator fields: bio=" + bio + ", lienInsta=" + lienInsta + ", lienTikTok=" + lienTikTok + ", categoriesContenu=" + categoriesContenu);
       try {
-        datenaissance = dateFormat.parse(dateNaissance);
-      } catch (ParseException e) {
-        throw new RuntimeException("Failed to parse dateNaissance: " + dateNaissance, e);
-      }
-    }
+          RegisterRequest registerRequest = RegisterRequest.builder()
+                  .nom(nom)
+                  .prenom(prenom)
+                  .email(email)
+                  .numtel(numtel)
+                  .nomEntreprise(nomEntreprise)
+                  .siteWebEntreprise(siteWebEntreprise)
+                  .secteurActivite(secteurActivite)
+                  .bio(bio)
+                  .lienInsta(lienInsta)
+                  .lienTikTok(lienTikTok)
+                  .categoriesContenu(categoriesContenu)
+                  .role(role)
+                  .build();
 
-    Date daterecrutement = null;
-    if (dateRecrutement != null) {
-      try {
-        daterecrutement = dateFormat.parse(dateRecrutement);
-      } catch (ParseException e) {
-        throw new RuntimeException("Failed to parse dateRecrutement: " + dateRecrutement, e);
-      }
-    }
-      User user1= serviceuser.finduserById(id);
-    try { file attachement1=null;
-      if (image!=null){
-        attachement1=Fileservice.saveAttachment(image);
-      }
-      RegisterRequest request= RegisterRequest.builder()
-              .nom(nom)
-              .prenom(prenom)
-              .email(email)
+          if (image != null) {
+              file savedImage = Fileservice.saveAttachment(image);
+              registerRequest.setImage(savedImage);
+          }
 
-              .role(role)
-              .build();
-    User response= serviceuser.updateUser(id,request);
-    return ResponseEntity.ok(response);
-  } catch (Exception e) {
-      throw new RuntimeException(e);
+          User updatedUser = serviceuser.updateUser(id, registerRequest);
+
+          return ResponseEntity.ok(updatedUser);
+
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+
     }}
     @GetMapping("/findbymail/{email}")
   public ResponseEntity<User> getUserBymail(@PathVariable("email") String email){

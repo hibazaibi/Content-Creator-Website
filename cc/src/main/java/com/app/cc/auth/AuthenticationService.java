@@ -44,14 +44,10 @@ public class AuthenticationService {
 private String idimage;
   public registerresponse register(RegisterRequest request) throws Exception {
     User user;
-
-    // Check if the user already exists
     var existingUser = repository.findByEmail(request.getEmail());
     if (existingUser.isPresent()) {
       throw new Exception("User already exists with this email.");
     }
-
-    // Check the role and create the appropriate instance based on the role
     if (request.getRole() == Role.CREATOR) {
       System.out.println("Creating Creator");
       user = Createur.builder()
@@ -60,7 +56,7 @@ private String idimage;
               .email(request.getEmail())
               .password(passwordEncoder.encode(request.getPassword()))
               .role(Role.CREATOR)
-              .bio(request.getBio())  // Additional fields specific to Creator
+              .bio(request.getBio())
               .lienInsta(request.getLienInsta())
               .lienTikTok(request.getLienTikTok())
               .categoriesContenu(request.getCategoriesContenu())
@@ -73,7 +69,7 @@ private String idimage;
               .email(request.getEmail())
               .password(passwordEncoder.encode(request.getPassword()))
               .role(Role.CLIENT)
-              .nomEntreprise(request.getNomEntreprise())  // Additional fields specific to Client
+              .nomEntreprise(request.getNomEntreprise())
               .siteWebEntreprise(request.getSiteWebEntreprise())
               .secteurActivite(request.getSecteurActivite())
               .build();
@@ -90,16 +86,9 @@ private String idimage;
       throw new Exception("Invalid role provided.");
     }
     System.out.println("User to be saved: " + user);
-
-    // Save the user
     var savedUser = repository.save(user);
-    // Generate JWT token
     var jwtToken = jwtService.generateToken(user);
-
-    // Save token
     saveUserToken(savedUser, jwtToken);
-
-    // Return the response
     return registerresponse.builder()
             .token(jwtToken)
             .nom(user.getNom())
@@ -263,34 +252,53 @@ private String idimage;
       throw new UserNotFoundException("User not found with ID: " + id);
     }
 }
+  @Transactional
   public User updateUser(Long id, RegisterRequest newUser) throws Exception {
     User user = repository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
-    if (newUser.getImage() != null) {
-      this.idimage=user.getImage().getId();
-    }
+
+    // Update common fields for all users
     if (newUser.getNom() != null) {
       user.setNom(newUser.getNom());
+      System.out.println("Updated nom to: " + newUser.getNom());
     }
     if (newUser.getPrenom() != null) {
       user.setPrenom(newUser.getPrenom());
+      System.out.println("Updated prenom to: " + newUser.getPrenom());
     }
     if (newUser.getEmail() != null) {
       user.setEmail(newUser.getEmail());
-    }
-    if (newUser.getRole() != null) {
-      user.setRole(newUser.getRole());
+      System.out.println("Updated email to: " + newUser.getEmail());
     }
 
-    if (newUser.getImage() != null) {
-      user.setImage(newUser.getImage());
+    // Handle role-specific updates
+    if (user.getRole() == Role.CLIENT) {
+      Client client = (Client) user; // Cast to Client
+      if (newUser.getNomEntreprise() != null) {
+        client.setNomEntreprise(newUser.getNomEntreprise());
+        System.out.println("Updated nomEntreprise to: " + newUser.getNomEntreprise());
+      }
+      if (newUser.getSiteWebEntreprise() != null) {
+        client.setSiteWebEntreprise(newUser.getSiteWebEntreprise());
+        System.out.println("Updated siteWebEntreprise to: " + newUser.getSiteWebEntreprise());
+      }
+      if (newUser.getSecteurActivite() != null) {
+        client.setSecteurActivite(newUser.getSecteurActivite());
+        System.out.println("Updated secteurActivite to: " + newUser.getSecteurActivite());
+      }
+    } else if (user.getRole() == Role.CREATOR) {
+      Createur createur = (Createur) user; // Cast to Createur
+      if (newUser.getBio() != null) {
+        createur.setBio(newUser.getBio());
+        System.out.println("Updated bio to: " + newUser.getBio());
+      }
+      // Add similar logging for other fields...
     }
-    User user4=repository.save(user);
-    if (newUser.getImage()!=null&&this.idimage!=null){
-      Fileservice.deleteAttachment(this.idimage);
 
-    }
-    return user4;
+    // Save the updated user entity
+    User savedUser = repository.save(user);
+    System.out.println("Saved user: " + savedUser);
+    return savedUser;
   }
   public userinfo finduserById2(Long id){
     User user3 = null;
