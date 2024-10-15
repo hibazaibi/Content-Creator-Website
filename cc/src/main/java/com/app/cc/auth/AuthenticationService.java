@@ -23,7 +23,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -253,11 +252,8 @@ private String idimage;
     }
 }
   public User updateUser(Long id, RegisterRequest newUser) throws Exception {
-    // Retrieve the user from the repository
     User user = repository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
-
-    // Update common fields for all users
     if (newUser.getNom() != null) {
       user.setNom(newUser.getNom());
       System.out.println("Updated nom to: " + newUser.getNom());
@@ -278,10 +274,8 @@ private String idimage;
     if (newUser.getDateNaissance() != null) {
       user.setDateNaissance(newUser.getDateNaissance());
       System.out.println("Updated datenaiss to: " + newUser.getDateNaissance());
-    }
-    // Handle role-specific updates based on the instance type
-    if (user instanceof Client) {
-      Client client = (Client) user; // Safe cast
+    }if (user instanceof Client) {
+      Client client = (Client) user;
       if (newUser.getNomEntreprise() != null) {
         client.setNomEntreprise(newUser.getNomEntreprise());
         System.out.println("Updated nomEntreprise to: " + newUser.getNomEntreprise());
@@ -295,7 +289,7 @@ private String idimage;
         System.out.println("Updated secteurActivite to: " + newUser.getSecteurActivite());
       }
     } else if (user instanceof Createur) {
-      Createur createur = (Createur) user; // Safe cast
+      Createur createur = (Createur) user;
       if (newUser.getBio() != null) {
         createur.setBio(newUser.getBio());
         System.out.println("Updated bio to: " + newUser.getBio());
@@ -313,8 +307,6 @@ private String idimage;
         System.out.println("Updated categoriesContenu to: " + newUser.getCategoriesContenu());
       }
     }
-
-    // Save the updated user entity
     User savedUser = repository.save(user);
     System.out.println("Saved user: " + savedUser);
     return savedUser;

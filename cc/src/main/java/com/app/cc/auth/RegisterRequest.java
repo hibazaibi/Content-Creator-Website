@@ -23,18 +23,13 @@ public class RegisterRequest {
   private String password;
   private Long numtel;
   private LocalDate dateNaissance;
-
-  // For Client
   private String nomEntreprise;
   private String siteWebEntreprise;
   private String secteurActivite;
-
-  // For Createur
   private String bio;
   private String lienInsta;
   private String lienTikTok;
   private String categoriesContenu;
-  private Role role; // This is where the role is determined (CREATOR, CLIENT, etc.)
-
-  private file image; // File associated with the user
+  private Role role;
+  private file image;
 }

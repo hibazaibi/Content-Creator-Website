@@ -2,6 +2,7 @@ package com.app.cc.offre;
 
 import com.app.cc.Client.Client;
 
+import com.app.cc.exeption.UserNotFoundException;
 import com.app.cc.user.Role;
 import com.app.cc.user.User;
 import com.app.cc.user.UserRepository;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,7 +25,6 @@ public class OffreService {
 
 
             public OffreResponse addOffer(OffreRequest request) throws Exception {
-                // Fetch the user based on the provided ID
                 Optional<User> userOpt = userRepository.findById(request.getUseridoffre());
                 if (userOpt.isEmpty()) {
                     throw new Exception("User not found");
@@ -31,16 +32,12 @@ public class OffreService {
 
                 User user = userOpt.get();
 
-                // Check if the user is a client using the role
                 if (user.getRole().equals(Role.CLIENT)) {
-                    // Now, find the creator based on the email provided in the request
                     Optional<User> creatorOpt = userRepository.findByEmail(request.getCreatorEmail());
                     if (creatorOpt.isEmpty()) {
                         throw new Exception("Creator not found with the provided email");
                     }
-                    User creator = creatorOpt.get(); // Get the creator
-
-                    // Create a new offer
+                    User creator = creatorOpt.get();
                     Offre offer = Offre.builder()
                             .description(request.getDescription())
                             .budget(request.getBudget())
@@ -48,10 +45,7 @@ public class OffreService {
                             .dateSoumission(LocalDateTime.now())
                             .build();
 
-                    // Save the offer in the database
                     offreRepository.save(offer);
-
-                    // Return a response containing the offer details
                     return OffreResponse.builder()
                             .description(offer.getDescription())
                             .budget(request.getBudget())
@@ -61,4 +55,18 @@ public class OffreService {
                 } else {
                     throw new Exception("User is not a client");
                 }
-        }}
+        }
+    public List<Offre> findAllOffres() {
+        return offreRepository.findAll();
+    }
+    public Offre findOffreById(Long id){
+        return  offreRepository.findById(id).orElseThrow(()-> new OffreNotFoundException("offre by id"+id+"notfound"));
+
+    }
+    public void deleteOffreById(Long id) throws Exception {
+        Offre offre= offreRepository.findById(id)
+                .orElseThrow(() -> new OffreNotFoundException("Offre not found with ID: " + id));
+        offreRepository.deleteById(id);
+
+    }
+}
