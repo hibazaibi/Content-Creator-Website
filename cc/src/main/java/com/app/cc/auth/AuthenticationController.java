@@ -94,54 +94,14 @@ public class AuthenticationController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
   @PutMapping("/update/{id}")
-  public ResponseEntity<User> updateUser(@PathVariable Long id,
-                                         @RequestParam(required = false) MultipartFile image,
-                                         @RequestParam(required = false) String nom,
-                                         @RequestParam(required = false) String prenom,
-                                         @RequestParam(required = false) String email,
-                                         @RequestParam(required = false) Long numtel,
-                                         @RequestParam(required = false) String nomEntreprise,
-                                         @RequestParam(required = false) String siteWebEntreprise,
-                                         @RequestParam(required = false) String secteurActivite,
-                                         @RequestParam(required = false) String bio,
-                                         @RequestParam(required = false) String lienInsta,
-                                         @RequestParam(required = false) String lienTikTok,
-                                         @RequestParam(required = false) String categoriesContenu,
-                                         @RequestParam(required = false) Role role) {
-    // Log incoming request
-    System.out.println("Updating user with ID: " + id);
-    System.out.println("Received data: nom=" + nom + ", prenom=" + prenom + ", email=" + email + ", role=" + role);
-    System.out.println("Client fields: nomEntreprise=" + nomEntreprise + ", siteWebEntreprise=" + siteWebEntreprise + ", secteurActivite=" + secteurActivite);
-    System.out.println("Creator fields: bio=" + bio + ", lienInsta=" + lienInsta + ", lienTikTok=" + lienTikTok + ", categoriesContenu=" + categoriesContenu);
-      try {
-          RegisterRequest registerRequest = RegisterRequest.builder()
-                  .nom(nom)
-                  .prenom(prenom)
-                  .email(email)
-                  .numtel(numtel)
-                  .nomEntreprise(nomEntreprise)
-                  .siteWebEntreprise(siteWebEntreprise)
-                  .secteurActivite(secteurActivite)
-                  .bio(bio)
-                  .lienInsta(lienInsta)
-                  .lienTikTok(lienTikTok)
-                  .categoriesContenu(categoriesContenu)
-                  .role(role)
-                  .build();
-
-          if (image != null) {
-              file savedImage = Fileservice.saveAttachment(image);
-              registerRequest.setImage(savedImage);
-          }
-
-          User updatedUser = serviceuser.updateUser(id, registerRequest);
-
-          return ResponseEntity.ok(updatedUser);
-
-      } catch (Exception e) {
-          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-
-    }}
+  public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody RegisterRequest registerreq) {
+    try {
+      User updatedUser = serviceuser.updateUser(id, registerreq);
+      return ResponseEntity.ok(updatedUser);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(null);
+    }
+  }
     @GetMapping("/findbymail/{email}")
   public ResponseEntity<User> getUserBymail(@PathVariable("email") String email){
     User user = serviceuser.finduserByemail(email);

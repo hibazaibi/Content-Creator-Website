@@ -252,8 +252,8 @@ private String idimage;
       throw new UserNotFoundException("User not found with ID: " + id);
     }
 }
-  @Transactional
   public User updateUser(Long id, RegisterRequest newUser) throws Exception {
+    // Retrieve the user from the repository
     User user = repository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
 
@@ -262,6 +262,7 @@ private String idimage;
       user.setNom(newUser.getNom());
       System.out.println("Updated nom to: " + newUser.getNom());
     }
+    System.out.println(user.getClass().getName());
     if (newUser.getPrenom() != null) {
       user.setPrenom(newUser.getPrenom());
       System.out.println("Updated prenom to: " + newUser.getPrenom());
@@ -270,10 +271,17 @@ private String idimage;
       user.setEmail(newUser.getEmail());
       System.out.println("Updated email to: " + newUser.getEmail());
     }
-
-    // Handle role-specific updates
-    if (user.getRole() == Role.CLIENT) {
-      Client client = (Client) user; // Cast to Client
+    if (newUser.getNumtel() != null) {
+      user.setNumtel(newUser.getNumtel());
+      System.out.println("Updated numtel to: " + newUser.getNumtel());
+    }
+    if (newUser.getDateNaissance() != null) {
+      user.setDateNaissance(newUser.getDateNaissance());
+      System.out.println("Updated datenaiss to: " + newUser.getDateNaissance());
+    }
+    // Handle role-specific updates based on the instance type
+    if (user instanceof Client) {
+      Client client = (Client) user; // Safe cast
       if (newUser.getNomEntreprise() != null) {
         client.setNomEntreprise(newUser.getNomEntreprise());
         System.out.println("Updated nomEntreprise to: " + newUser.getNomEntreprise());
@@ -286,13 +294,24 @@ private String idimage;
         client.setSecteurActivite(newUser.getSecteurActivite());
         System.out.println("Updated secteurActivite to: " + newUser.getSecteurActivite());
       }
-    } else if (user.getRole() == Role.CREATOR) {
-      Createur createur = (Createur) user; // Cast to Createur
+    } else if (user instanceof Createur) {
+      Createur createur = (Createur) user; // Safe cast
       if (newUser.getBio() != null) {
         createur.setBio(newUser.getBio());
         System.out.println("Updated bio to: " + newUser.getBio());
       }
-      // Add similar logging for other fields...
+      if (newUser.getLienInsta() != null) {
+        createur.setLienInsta(newUser.getLienInsta());
+        System.out.println("Updated lienInsta to: " + newUser.getLienInsta());
+      }
+      if (newUser.getLienTikTok() != null) {
+        createur.setLienTikTok(newUser.getLienTikTok());
+        System.out.println("Updated lienTikTok to: " + newUser.getLienTikTok());
+      }
+      if (newUser.getCategoriesContenu() != null) {
+        createur.setCategoriesContenu(newUser.getCategoriesContenu());
+        System.out.println("Updated categoriesContenu to: " + newUser.getCategoriesContenu());
+      }
     }
 
     // Save the updated user entity
@@ -300,6 +319,7 @@ private String idimage;
     System.out.println("Saved user: " + savedUser);
     return savedUser;
   }
+
   public userinfo finduserById2(Long id){
     User user3 = null;
 
