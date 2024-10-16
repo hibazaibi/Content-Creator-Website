@@ -16,9 +16,10 @@ import java.time.LocalDateTime;
 public class OffreResponse {
     private String description;
     private Double budget;
-    private String creatorEmail;
-    private Long useridoffre;
+    private String useridoffre;
     private LocalDateTime dateSoumission;
     private OffreStatus status;
+    private String idcreateur ;
+
 
 }

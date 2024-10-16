@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 public class OffreRequest {
     private String description;
     private Double budget;
-    private String creatorEmail; // Email of the creator to whom the offer is made
-    private Long useridoffre; // ID of the user (Client) making the offer
+    private Long useridoffre;
     private LocalDateTime dateSoumission;
     private OffreStatus status;
 
+    private Long idcreateur ; 
 
 }

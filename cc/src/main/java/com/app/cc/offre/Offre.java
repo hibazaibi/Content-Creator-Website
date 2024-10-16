@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 @Data
 @NoArgsConstructor
 @Builder
@@ -31,4 +30,11 @@ public class Offre {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_idoffre")
-    public User useridoffre; }
+    public User useridoffre;
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "createur_id")
+    private User idcreateur ;
+
+
+}
