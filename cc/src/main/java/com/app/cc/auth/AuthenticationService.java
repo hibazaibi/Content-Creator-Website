@@ -1,7 +1,9 @@
 package com.app.cc.auth;
 
 import com.app.cc.Client.Client;
+import com.app.cc.Client.ClientRepository;
 import com.app.cc.Createur.Createur;
+import com.app.cc.Createur.CreateurRepository;
 import com.app.cc.config.JwtService;
 import com.app.cc.email.EmailSender;
 import com.app.cc.exeption.UserNotFoundException;
@@ -31,7 +33,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationService {
   private final UserRepository repository;
-
+private final ClientRepository clientRepository;
+private final CreateurRepository createurRepository;
 
   private final fileService Fileservice;
 
@@ -174,8 +177,12 @@ private String idimage;
   }
   public User finduserById(Long id){
     return  repository.findById(id).orElseThrow(()-> new UserNotFoundException("user by id"+id+"notfound"));
-
-
+  }
+  public Client findclientById(Long id){
+    return  clientRepository.findById(id).orElseThrow(()-> new UserNotFoundException("user by id"+id+"notfound"));
+  }
+  public Createur findcreateurById(Long id){
+    return  createurRepository.findById(id).orElseThrow(()-> new UserNotFoundException("user by id"+id+"notfound"));
   }
 
   public forgetpassresponse forgetPassword(forgetpassrequest request) throws Exception {

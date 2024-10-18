@@ -1,28 +1,19 @@
 package com.app.cc.auth;
 
 
-import com.app.cc.file.file;
+import com.app.cc.Client.Client;
+import com.app.cc.Createur.Createur;
 import com.app.cc.file.fileService;
-import com.app.cc.user.Role;
 import com.app.cc.user.User;
 import com.app.cc.user.UserRepository;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -51,6 +42,16 @@ public class AuthenticationController {
   public ResponseEntity<userinfo> getUserById(@PathVariable("id") Long id){
       userinfo user= serviceuser.finduserById2(id);
     return new ResponseEntity<>(user, HttpStatus.OK);
+  }
+  @GetMapping("/findclient/{id}")
+  public ResponseEntity<Client> getClientById(@PathVariable("id") Long id){
+    Client client= serviceuser.findclientById(id);
+    return new ResponseEntity<>(client, HttpStatus.OK);
+  }
+  @GetMapping("/findcreateur/{id}")
+  public ResponseEntity<Createur> getCreateurById(@PathVariable("id") Long id){
+    Createur createur= serviceuser.findcreateurById(id);
+    return new ResponseEntity<>(createur, HttpStatus.OK);
   }
   @GetMapping("/find2/{id}")
   public ResponseEntity<User> getUserById2(@PathVariable("id") Long id){

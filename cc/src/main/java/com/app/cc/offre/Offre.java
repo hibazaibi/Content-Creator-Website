@@ -2,7 +2,6 @@ package com.app.cc.offre;
 
 import com.app.cc.Client.Client;
 import com.app.cc.Createur.Createur;
-import com.app.cc.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
