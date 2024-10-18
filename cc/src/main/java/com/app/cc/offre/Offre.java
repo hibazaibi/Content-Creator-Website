@@ -1,5 +1,7 @@
 package com.app.cc.offre;
 
+import com.app.cc.Client.Client;
+import com.app.cc.Createur.Createur;
 import com.app.cc.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -30,11 +32,11 @@ public class Offre {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_idoffre")
-    public User useridoffre;
+    public Client useridoffre;
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "createur_id")
-    private User idcreateur ;
+    private Createur idcreateur ;
 
 
 }

@@ -1,6 +1,8 @@
 package com.app.cc.offre;
 
 
+import com.app.cc.Client.ClientRepository;
+import com.app.cc.Createur.CreateurRepository;
 import com.app.cc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,15 @@ public class OffreService {
     private OffreRepository offreRepository;
 
     private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
+    private final CreateurRepository createurRepository;
 
 
-            public OffreResponse addOffer(OffreRequest request) throws Exception {
-                var  userOpt = userRepository.findById(request.getUseridoffre()) ;
-                var  usercreateur= userRepository.findById(request.getIdcreateur()) ;
+
+
+    public OffreResponse addOffer(OffreRequest request) throws Exception {
+                var  userOpt = clientRepository.findById(request.getUseridoffre()) ;
+                var  usercreateur= createurRepository.findById(request.getIdcreateur()) ;
 
                 if (userOpt.isPresent() && usercreateur.isPresent())  {
 
