@@ -24,7 +24,7 @@ public class Evaluation {
     private Client client;
 
     @ManyToOne
-    private Createur creator;
+    private Createur createur;
 
     private int rating;
 
