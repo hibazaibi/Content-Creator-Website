@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class EvaluationResponse {
     private Long id;
     private int rating;

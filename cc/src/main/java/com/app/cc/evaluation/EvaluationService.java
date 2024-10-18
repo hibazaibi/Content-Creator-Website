@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,6 +42,17 @@ public class EvaluationService {
         evaluationRepository.save(evaluation);
 
         return new EvaluationResponse(evaluation.getIdevaluation(), evaluation.getRating(), evaluation.getFeedback());
+    }
+    public List<Evaluation> getEvaluationsByCreator(Long creatorId) throws Exception {
+        Optional<User> creatorOpt = userRepository.findById(creatorId);
+        if (creatorOpt.isEmpty() || !(creatorOpt.get() instanceof Createur)) {
+            throw new Exception("Creator not found or is not a valid creator");
+        }
+
+        Createur creator = (Createur) creatorOpt.get();
+
+        // Fetch the evaluations for the creator
+        return evaluationRepository.findByCreateur(creator);
     }
 }
 
