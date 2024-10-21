@@ -36,6 +36,7 @@ public class Offre {
     @JsonBackReference
     @JoinColumn(name = "createur_id")
     private Createur idcreateur ;
-
+    @Column(name = "expiration_date")
+    private LocalDateTime expirationDate;
 
 }

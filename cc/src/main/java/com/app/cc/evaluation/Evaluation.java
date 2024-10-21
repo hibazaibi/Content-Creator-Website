@@ -2,6 +2,7 @@ package com.app.cc.evaluation;
 
 import com.app.cc.Client.Client;
 import com.app.cc.Createur.Createur;
+import com.app.cc.offre.Offre;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,9 @@ public class Evaluation {
     @ManyToOne
     private Createur createur;
 
+    @ManyToOne
+    @JoinColumn(name = "offer_id")
+    private Offre offre;
     private int rating;
 
     private String feedback;

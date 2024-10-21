@@ -20,6 +20,7 @@ public class OffreResponse {
     private LocalDateTime dateSoumission;
     private OffreStatus status;
     private String idcreateur ;
+    private LocalDateTime expirationDate;
 
 
 }

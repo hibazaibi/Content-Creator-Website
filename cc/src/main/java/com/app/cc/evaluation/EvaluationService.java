@@ -2,6 +2,9 @@ package com.app.cc.evaluation;
 
 import com.app.cc.Client.Client;
 import com.app.cc.Createur.Createur;
+import com.app.cc.offre.Offre;
+import com.app.cc.offre.OffreRepository;
+import com.app.cc.offre.OffreStatus;
 import com.app.cc.user.Role;
 import com.app.cc.user.User;
 import com.app.cc.user.UserRepository;
@@ -17,8 +20,18 @@ import java.util.Optional;
 public class EvaluationService {
     private final EvaluationRepository evaluationRepository;
     private final UserRepository userRepository;
-
+    private final OffreRepository offreRepository;
     public EvaluationResponse addEvaluation(EvaluationRequest request) throws Exception {
+        Optional<Offre> offerOpt = offreRepository.findById(request.getOfferId());
+        if (offerOpt.isEmpty()) {
+            throw new Exception("Offre not found");
+        }
+
+        Offre offer = offerOpt.get();
+        if (offer.getStatus() != OffreStatus.TERMINEE) {
+            throw new Exception("You can only evaluate after the offer is completed");
+        }
+
         Optional<User> clientOpt = userRepository.findById(request.getClientId());
         if (clientOpt.isEmpty() || !clientOpt.get().getRole().equals(Role.CLIENT)) {
             throw new Exception("Client not found or invalid");
@@ -34,6 +47,7 @@ public class EvaluationService {
         Evaluation evaluation = Evaluation.builder()
                 .client(client)
                 .createur(createur)
+                .offre(offer)
                 .rating(request.getRating())
                 .feedback(request.getFeedback())
                 .dateEvaluated(LocalDateTime.now())
@@ -43,6 +57,7 @@ public class EvaluationService {
 
         return new EvaluationResponse(evaluation.getIdevaluation(), evaluation.getRating(), evaluation.getFeedback());
     }
+
     public List<Evaluation> getEvaluationsByCreator(Long creatorId) throws Exception {
         Optional<User> creatorOpt = userRepository.findById(creatorId);
         if (creatorOpt.isEmpty() || !(creatorOpt.get() instanceof Createur)) {
@@ -51,8 +66,8 @@ public class EvaluationService {
 
         Createur creator = (Createur) creatorOpt.get();
 
-        // Fetch the evaluations for the creator
         return evaluationRepository.findByCreateur(creator);
     }
 }
+
 

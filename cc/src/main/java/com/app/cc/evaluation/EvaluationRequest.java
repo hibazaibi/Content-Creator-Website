@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EvaluationRequest {
+    private Long offerId;
     private Long clientId;
     private Long creatorId;
     private int rating;

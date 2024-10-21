@@ -31,7 +31,6 @@ public class EvaluationController {
         try {
             List<Evaluation> evaluations = evaluationService.getEvaluationsByCreator(creatorId);
 
-            // Convert evaluations to EvaluationResponse DTOs
             List<EvaluationResponse> response = evaluations.stream()
                     .map(evaluation -> new EvaluationResponse(evaluation.getIdevaluation(),evaluation.getRating(), evaluation.getFeedback()))
                     .collect(Collectors.toList());
