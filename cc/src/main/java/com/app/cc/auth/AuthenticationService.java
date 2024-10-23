@@ -62,6 +62,7 @@ private String idimage;
               .lienInsta(request.getLienInsta())
               .lienTikTok(request.getLienTikTok())
               .categoriesContenu(request.getCategoriesContenu())
+              .active(false)
               .build();
     } else if (request.getRole() == Role.CLIENT) {
       System.out.println("Creating Client");
@@ -74,6 +75,7 @@ private String idimage;
               .nomEntreprise(request.getNomEntreprise())
               .siteWebEntreprise(request.getSiteWebEntreprise())
               .secteurActivite(request.getSecteurActivite())
+              .active(false)
               .build();
     } else if (request.getRole() == Role.ADMIN) {
       System.out.println("Creating General User");
@@ -83,6 +85,7 @@ private String idimage;
               .email(request.getEmail())
               .password(passwordEncoder.encode(request.getPassword()))
               .role(Role.ADMIN)
+              .active(true)
               .build();
     } else {
       throw new Exception("Invalid role provided.");
@@ -101,6 +104,13 @@ private String idimage;
   }
 
 
+  public void activateUser(Long userId) throws Exception {
+    User user = repository.findById(userId)
+            .orElseThrow(() -> new Exception("User not found"));
+
+    user.setActive(true);
+    repository.save(user);
+  }
 
 
   public changepasswordresponse changePassword(changepasswordrequest request) throws Exception {
@@ -147,7 +157,7 @@ private String idimage;
     return true;
   }
 
-  public AuthenticationResponse authenticate(AuthenticationRequest request) {
+  public AuthenticationResponse authenticate(AuthenticationRequest request) throws Exception {
     authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                     request.getEmail(),
@@ -156,6 +166,9 @@ private String idimage;
     );
     var user = repository.findByEmail(request.getEmail())
             .orElseThrow();
+    if (!user.isActive()) {
+      throw new Exception("Account not activated by admin.");
+    }
     var jwtToken = jwtService.generateToken(user);
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);

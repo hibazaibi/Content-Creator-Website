@@ -36,6 +36,8 @@ public class User implements UserDetails {
   private String email;
   private String password;
   private Long numtel;
+  @Column(name = "active", nullable = false)
+  private boolean active = false;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private LocalDate dateNaissance;
   @ManyToOne
