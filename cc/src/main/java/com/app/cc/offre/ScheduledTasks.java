@@ -9,7 +9,7 @@ public class ScheduledTasks {
     @Autowired
     private OffreService offreService;
 
-    @Scheduled(fixedRate = 3600000)  // Runs every hour
+    @Scheduled(cron = "0 0 0 * * ?")
     public void expirePendingOffers() {
         offreService.checkExpiredOffers();
     }
