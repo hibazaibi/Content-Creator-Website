@@ -29,35 +29,29 @@ public class MessageService {
     public Message sendMessage(MessageRequest messageRequest) {
         User sender = userRepository.findById(messageRequest.getSenderId())
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
-
         User receiver = userRepository.findById(messageRequest.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
-        Optional<Conversation> existingConversation = conversationRepository
-                .findByClientIdAndCreatorIdOrCreatorIdAndClientId(sender.getId(), receiver.getId(), receiver.getId(), sender.getId());
-
-        Conversation conversation;
-        if (existingConversation.isPresent()) {
-            conversation = existingConversation.get();
-        } else {
-            conversation = new Conversation();
-            conversation.setClient(sender);
-            conversation.setCreator(receiver);
-            conversation.setUpdatedAt(LocalDateTime.now());
-
-            conversation = conversationRepository.save(conversation);
-        }
-
+        Optional<Conversation> conversation1 = conversationRepository
+                .findByClientIdAndCreatorId(sender.getId(), receiver.getId());
+        Optional<Conversation> conversation2 = conversationRepository
+                .findByClientIdAndCreatorId(receiver.getId(), sender.getId());
+        Conversation conversation = conversation1.orElse(conversation2.orElseGet(() -> {
+            Conversation newConversation = new Conversation();
+            newConversation.setClient(sender);
+            newConversation.setCreator(receiver);
+            newConversation.setUpdatedAt(LocalDateTime.now());
+            return conversationRepository.save(newConversation);
+        }));
         conversation.setUpdatedAt(LocalDateTime.now());
-        conversationRepository.save(conversation);
         Message message = new Message();
         message.setSender(sender);
         message.setConversation(conversation);
         message.setMessageText(messageRequest.getMessageText());
         message.setTimestamp(LocalDateTime.now());
         message.setRead(false);
+
         return messageRepository.save(message);
     }
-
 
 
 
