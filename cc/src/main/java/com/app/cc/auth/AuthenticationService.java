@@ -63,6 +63,7 @@ private String idimage;
               .lienTikTok(request.getLienTikTok())
               .categoriesContenu(request.getCategoriesContenu())
               .active(false)
+              .image(request.getImage())
               .build();
     } else if (request.getRole() == Role.CLIENT) {
       System.out.println("Creating Client");
@@ -75,6 +76,9 @@ private String idimage;
               .nomEntreprise(request.getNomEntreprise())
               .siteWebEntreprise(request.getSiteWebEntreprise())
               .secteurActivite(request.getSecteurActivite())
+
+              .image(request.getImage())
+
               .active(false)
               .build();
     } else if (request.getRole() == Role.ADMIN) {
@@ -85,6 +89,7 @@ private String idimage;
               .email(request.getEmail())
               .password(passwordEncoder.encode(request.getPassword()))
               .role(Role.ADMIN)
+               .image(request.getImage())
               .active(true)
               .build();
     } else {
@@ -274,6 +279,9 @@ private String idimage;
   public User updateUser(Long id, RegisterRequest newUser) throws Exception {
     User user = repository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
+    if (newUser.getImage() != null && user.getImage() != null) {
+      this.idimage = user.getImage().getId();
+    }
     if (newUser.getNom() != null) {
       user.setNom(newUser.getNom());
       System.out.println("Updated nom to: " + newUser.getNom());
@@ -287,6 +295,7 @@ private String idimage;
       user.setEmail(newUser.getEmail());
       System.out.println("Updated email to: " + newUser.getEmail());
     }
+
     if (newUser.getNumtel() != null) {
       user.setNumtel(newUser.getNumtel());
       System.out.println("Updated numtel to: " + newUser.getNumtel());
@@ -327,8 +336,14 @@ private String idimage;
         System.out.println("Updated categoriesContenu to: " + newUser.getCategoriesContenu());
       }
     }
+    if (newUser.getImage() != null) {
+      user.setImage(newUser.getImage());
+    }
     User savedUser = repository.save(user);
     System.out.println("Saved user: " + savedUser);
+    if (newUser.getImage()!=null&&this.idimage!=null){
+      Fileservice.deleteAttachment(this.idimage);
+    }
     return savedUser;
   }
 

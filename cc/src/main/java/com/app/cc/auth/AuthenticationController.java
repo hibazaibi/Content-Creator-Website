@@ -3,7 +3,9 @@ package com.app.cc.auth;
 
 import com.app.cc.Client.Client;
 import com.app.cc.Createur.Createur;
+import com.app.cc.file.file;
 import com.app.cc.file.fileService;
+import com.app.cc.user.Role;
 import com.app.cc.user.User;
 import com.app.cc.user.UserRepository;
 
@@ -11,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -26,10 +31,52 @@ public class AuthenticationController {
 
   @PostMapping("/register")
   public ResponseEntity<registerresponse> register(
-          @RequestBody RegisterRequest request
-  ) throws Exception {
-    return ResponseEntity.ok(serviceuser.register(request));
-  }
+          @RequestParam(required = false) String nom,
+          @RequestParam(required = false) String prenom,
+          @RequestParam(required = false) String email,
+
+          @RequestParam(required = false) String password,
+
+          @RequestParam(required = false) Role role,
+          @RequestParam(required = false) String lienInsta,
+  @RequestParam(required = false)  String lienTikTok,
+  @RequestParam(required = false)  String categoriesContenu,
+          @RequestParam(required = false)  LocalDate dateNaissance,
+          @RequestParam(required = false)   String nomEntreprise,
+          @RequestParam(required = false)   String siteWebEntreprise,
+          @RequestParam(required = false)  String secteurActivite ,
+          @RequestParam(required = false)  Long numtel,
+
+  @RequestParam(required = false) String bio,
+
+          @RequestParam(required = false) MultipartFile image){
+    try {
+
+      file pdp = Fileservice.saveAttachment(image);
+      RegisterRequest request = RegisterRequest.builder()
+              .nom(nom)
+              .prenom(prenom)
+              .email(email)
+              .bio(bio)
+              .image(pdp)
+              .dateNaissance(dateNaissance)
+              .numtel(numtel)
+              .lienInsta(lienInsta)
+              .lienTikTok(lienTikTok)
+              .siteWebEntreprise(siteWebEntreprise)
+              .secteurActivite(secteurActivite)
+              .nomEntreprise(nomEntreprise)
+              .categoriesContenu(categoriesContenu)
+              .password(password)
+              .role(role)
+              .build();
+      registerresponse saved = serviceuser.register(request);
+      return ResponseEntity.ok(saved);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }}
+
 
   @PostMapping("/authenticate")
   public ResponseEntity<AuthenticationResponse> authenticate(
@@ -95,10 +142,49 @@ public class AuthenticationController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
   @PutMapping("/update/{id}")
-  public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody RegisterRequest registerreq) {
+  public ResponseEntity<User> updateUser(
+          @PathVariable Long id,
+          @RequestParam(required = false) String nom,
+          @RequestParam(required = false) String prenom,
+          @RequestParam(required = false) String email,
+          @RequestParam(required = false) String password,
+          @RequestParam(required = false) Role role,
+          @RequestParam(required = false) String lienInsta,
+          @RequestParam(required = false)  String lienTikTok,
+          @RequestParam(required = false)  String categoriesContenu,
+          @RequestParam(required = false)  LocalDate dateNaissance,
+          @RequestParam(required = false)   String nomEntreprise,
+          @RequestParam(required = false)   String siteWebEntreprise,
+          @RequestParam(required = false)  String secteurActivite ,
+          @RequestParam(required = false)  Long numtel,
+          @RequestParam(required = false) String bio,
+          @RequestParam(required = false) MultipartFile image) {
     try {
-      User updatedUser = serviceuser.updateUser(id, registerreq);
-      return ResponseEntity.ok(updatedUser);
+      file pdp = null;
+      if (image != null) {
+        pdp =  Fileservice.saveAttachment(image);
+      }
+      RegisterRequest request = RegisterRequest.builder()
+              .nom(nom)
+              .prenom(prenom)
+              .email(email)
+              .bio(bio)
+              .image(pdp)
+              .dateNaissance(dateNaissance)
+              .numtel(numtel)
+              .lienInsta(lienInsta)
+              .siteWebEntreprise(siteWebEntreprise)
+              .lienTikTok(lienTikTok)
+              .secteurActivite(secteurActivite)
+              .nomEntreprise(nomEntreprise)
+              .categoriesContenu(categoriesContenu)
+              .password(password)
+              .role(role)
+              .password(password)
+              .build();
+      User saved = serviceuser.updateUser(id,request);
+      return ResponseEntity.ok(saved);
+
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(null);
     }
