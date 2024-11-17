@@ -4,7 +4,6 @@ package com.app.cc.offre;
 import com.app.cc.Client.ClientRepository;
 import com.app.cc.Createur.CreateurRepository;
 import com.app.cc.email.EmailSender;
-import com.app.cc.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,6 @@ import java.util.List;
 public class OffreService {
     @Autowired
     private OffreRepository offreRepository;
-
-    private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final CreateurRepository createurRepository;
 
@@ -31,7 +28,7 @@ public class OffreService {
         var userCreateur = createurRepository.findById(request.getIdcreateur());
 
         if (userOpt.isPresent() && userCreateur.isPresent()) {
-            LocalDateTime expirationDate = LocalDateTime.now().plusDays(30);
+            LocalDateTime expirationDate = LocalDateTime.now().plusDays(15);
 
             Offre offer = Offre.builder()
                     .description(request.getDescription())
@@ -39,6 +36,9 @@ public class OffreService {
                     .status(OffreStatus.EN_ATTENTE)
                     .dateSoumission(LocalDateTime.now())
                     .expirationDate(expirationDate)
+                    .Deadline(request.getDeadline())
+                    .collaborationDetails(request.getCollaborationDetails())
+                    .specialRequests(request.getSpecialRequests())
                     .useridoffre(userOpt.get())
                     .idcreateur(userCreateur.get())
                     .build();
@@ -51,6 +51,9 @@ public class OffreService {
                     .status(offer.getStatus())
                     .dateSoumission(offer.getDateSoumission())
                     .expirationDate(offer.getExpirationDate())
+                    .Deadline(offer.getDeadline())
+                    .collaborationDetails(offer.getCollaborationDetails())
+                    .specialRequests(offer.getSpecialRequests())
                     .useridoffre(offer.getUseridoffre().getEmail())
                     .idcreateur(offer.getIdcreateur().getEmail())
                     .build();

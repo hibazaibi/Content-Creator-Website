@@ -56,7 +56,7 @@ private String idimage;
               .nom(request.getNom())
               .prenom(request.getPrenom())
               .email(request.getEmail())
-              .password(passwordEncoder.encode(request.getPassword()))
+             .password(passwordEncoder.encode(request.getPassword()))
               .role(Role.CREATOR)
               .bio(request.getBio())
               .lienInsta(request.getLienInsta())
@@ -76,9 +76,7 @@ private String idimage;
               .nomEntreprise(request.getNomEntreprise())
               .siteWebEntreprise(request.getSiteWebEntreprise())
               .secteurActivite(request.getSecteurActivite())
-
               .image(request.getImage())
-
               .active(false)
               .build();
     } else if (request.getRole() == Role.ADMIN) {
@@ -180,6 +178,7 @@ private String idimage;
     return AuthenticationResponse.builder()
             .role(user.getRole())
             .token(jwtToken).email(user.getEmail())
+            .id(user.getId())
             .build();
   }
 

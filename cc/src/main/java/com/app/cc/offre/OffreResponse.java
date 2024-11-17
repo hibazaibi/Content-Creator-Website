@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Builder
@@ -21,6 +22,8 @@ public class OffreResponse {
     private OffreStatus status;
     private String idcreateur ;
     private LocalDateTime expirationDate;
-
+    private Date Deadline;
+    private String collaborationDetails;
+    private String specialRequests;
 
 }

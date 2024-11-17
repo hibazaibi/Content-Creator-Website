@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @Builder
@@ -27,7 +29,9 @@ public class Offre {
     private OffreStatus status;
 
     private LocalDateTime dateSoumission;
-
+    private Date Deadline;
+    private String collaborationDetails;
+    private String specialRequests;
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_idoffre")

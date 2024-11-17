@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Builder
@@ -17,7 +18,9 @@ public class OffreRequest {
     private Long useridoffre;
     private LocalDateTime dateSoumission;
     private OffreStatus status;
-
-    private Long idcreateur ; 
+private Date Deadline;
+    private Long idcreateur ;
+    private String collaborationDetails;
+    private String specialRequests;
 
 }
