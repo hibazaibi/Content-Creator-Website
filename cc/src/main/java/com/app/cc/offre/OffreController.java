@@ -39,6 +39,15 @@ public class OffreController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/find2/{id}")
+    public ResponseEntity<Offre> getOfferByuserid(@PathVariable("id") Long id) {
+        try {
+            Offre offre = offreService.findOffreByUserId(id);
+            return new ResponseEntity<>(offre, HttpStatus.OK);
+        } catch (OffreNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteOffer(@PathVariable Long id) throws Exception {

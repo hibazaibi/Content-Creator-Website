@@ -70,6 +70,10 @@ public class OffreService {
         return offreRepository.findById(id)
                 .orElseThrow(() -> new OffreNotFoundException("Offer with ID " + id + " not found"));
     }
+    public Offre findOffreByUserId(Long id) {
+        return offreRepository.findByUseridoffre(id)
+                .orElseThrow(() -> new OffreNotFoundException("Offer with ID " + id + " not found"));
+    }
 
     public void deleteOffreById(Long id) throws Exception {
         Offre offer = offreRepository.findById(id)

@@ -3,6 +3,7 @@ package com.app.cc.offre;
 import com.app.cc.Client.Client;
 import com.app.cc.Createur.Createur;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,7 @@ public class Offre {
     private OffreStatus status;
 
     private LocalDateTime dateSoumission;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date Deadline;
     private String collaborationDetails;
     private String specialRequests;
