@@ -200,6 +200,9 @@ private String idimage;
   public Createur findcreateurById(Long id){
     return  createurRepository.findById(id).orElseThrow(()-> new UserNotFoundException("user by id"+id+"notfound"));
   }
+  public List<Createur> getAllCreators() {
+    return createurRepository.findAllCreators();
+  }
 
   public forgetpassresponse forgetPassword(forgetpassrequest request) throws Exception {
     User user = repository.findByEmail(request.getEmail())
@@ -236,6 +239,7 @@ private String idimage;
 
     return repository.findAll();
   }
+
   public List<UserInfo> findAllUsers1() throws Exception {
     List<User> users = repository.findAll();
     if (users.isEmpty()) {
@@ -346,11 +350,9 @@ private String idimage;
   }
 
   public UserInfo findUserById2(Long id) {
-    // Fetch the user from the repository or throw an exception if not found
     User user = repository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
 
-    // Map common user data to UserInfo DTO
     UserInfo userInfo = new UserInfo();
     userInfo.setId(user.getId());
     userInfo.setNom(user.getNom());
@@ -359,13 +361,11 @@ private String idimage;
     userInfo.setPassword(user.getPassword());
     userInfo.setRole(user.getRole());
 
-    // Map image details if the user has an image
     if (user.getImage() != null) {
       userInfo.setImageid(user.getImage().getId());
       userInfo.setFiletype(user.getImage().getFileType());
     }
 
-    // Map role-specific attributes
     if (user instanceof Createur) {
       Createur creator = (Createur) user;
       userInfo.setLienInsta(creator.getLienInsta());
@@ -398,6 +398,7 @@ private String idimage;
     user.setRole(user1.getRole());
     user.setImageid(user1.getImage().getId());
       user.setFiletype(user1.getImage().getFileType());
+
     return user;
   }
 

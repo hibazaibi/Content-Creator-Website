@@ -86,6 +86,14 @@ public class AuthenticationController {
       UserInfo user= serviceuser.findUserById2(id);
     return new ResponseEntity<>(user, HttpStatus.OK);
   }
+  @GetMapping("/creators")
+  public ResponseEntity<List<Createur>> getAllCreators() {
+    List<Createur> creators = serviceuser.getAllCreators();
+    if (creators.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<>(creators, HttpStatus.OK);
+  }
   @GetMapping("/findclient/{id}")
   public ResponseEntity<Client> getClientById(@PathVariable("id") Long id){
     Client client= serviceuser.findclientById(id);
