@@ -7,7 +7,6 @@ import com.app.cc.Createur.CreateurRepository;
 import com.app.cc.config.JwtService;
 import com.app.cc.email.EmailSender;
 import com.app.cc.exeption.UserNotFoundException;
-import com.app.cc.file.file;
 import com.app.cc.file.fileService;
 import com.app.cc.token.Token;
 import com.app.cc.token.TokenRepository;
@@ -237,14 +236,14 @@ private String idimage;
 
     return repository.findAll();
   }
-  public List<userinfo> findAllUsers1() throws Exception {
+  public List<UserInfo> findAllUsers1() throws Exception {
     List<User> users = repository.findAll();
     if (users.isEmpty()) {
       throw new UserNotFoundException("No users found.");
     }
-    List<userinfo> userinfos= new ArrayList<>();
+    List<UserInfo> userinfos= new ArrayList<>();
     for (User user : users) {
-      userinfo userinfo = new userinfo();
+      UserInfo userinfo = new UserInfo();
       userinfo.setId(user.getId());
       userinfo.setNom(user.getNom());
       userinfo.setPrenom(user.getPrenom());
@@ -346,34 +345,52 @@ private String idimage;
     return savedUser;
   }
 
-  public userinfo finduserById2(Long id){
-    User user3 = null;
+  public UserInfo findUserById2(Long id) {
+    // Fetch the user from the repository or throw an exception if not found
+    User user = repository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
 
-    user3= repository.findById(id).orElseThrow(()-> new UserNotFoundException("user by id"+id+"notfound"));
-      userinfo userinfo = new userinfo();
-      userinfo.setId(user3.getId());
-      userinfo.setNom(user3.getNom());
-      userinfo.setPrenom(user3.getPrenom());
-      userinfo.setEmail(user3.getEmail());
+    // Map common user data to UserInfo DTO
+    UserInfo userInfo = new UserInfo();
+    userInfo.setId(user.getId());
+    userInfo.setNom(user.getNom());
+    userInfo.setPrenom(user.getPrenom());
+    userInfo.setEmail(user.getEmail());
+    userInfo.setPassword(user.getPassword());
+    userInfo.setRole(user.getRole());
 
-      userinfo.setPassword(user3.getPassword());
-      userinfo.setRole(user3.getRole());
-      if (user3.getImage()!=null){
-          userinfo.setImageid(user3.getImage().getId());
-          userinfo.setFiletype(user3.getImage().getFileType());
-      }
+    // Map image details if the user has an image
+    if (user.getImage() != null) {
+      userInfo.setImageid(user.getImage().getId());
+      userInfo.setFiletype(user.getImage().getFileType());
+    }
 
-    return userinfo;
+    // Map role-specific attributes
+    if (user instanceof Createur) {
+      Createur creator = (Createur) user;
+      userInfo.setLienInsta(creator.getLienInsta());
+      userInfo.setLienTikTok(creator.getLienTikTok());
+      userInfo.setCategoriesContenu(creator.getCategoriesContenu());
+      userInfo.setBio(creator.getBio());
+    } else if (user instanceof Client) {
+      Client client = (Client) user;
+      userInfo.setNomEntreprise(client.getNomEntreprise());
+      userInfo.setSiteWebEntreprise(client.getSiteWebEntreprise());
+      userInfo.setSecteurActivite(client.getSecteurActivite());
+    }
+
+    return userInfo;
   }
+
 
   public User finduserByemail(String email){
     return  repository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("user by id"+email+"notfound"));
 
 
   }
-  public userinfo finduserByemail2(String email){
+  public UserInfo finduserByemail2(String email){
    User user1=  repository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("user by id"+email+"notfound"));
-    userinfo user = new userinfo();
+    UserInfo user = new UserInfo();
     user.setNom(user1.getNom());
     user.setPrenom(user1.getPrenom());
     user.setEmail(user1.getEmail());

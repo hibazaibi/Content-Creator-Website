@@ -1,5 +1,6 @@
 package com.app.cc.auth;
 
+import com.app.cc.file.file;
 import com.app.cc.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,16 +13,24 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class userinfo {
+public class UserInfo {
+
     private String nom;
     private String prenom;
     private String email;
     private String password;
-    private String sexe;
-
+    private Long numtel;
+    private LocalDate dateNaissance;
+    private String nomEntreprise;
+    private String siteWebEntreprise;
+    private String secteurActivite;
+    private String bio;
+    private String lienInsta;
+    private String lienTikTok;
+    private String categoriesContenu;
+    private Role role;
+    private file image;
 private Long id;
-
-    private Role role ;
     private String imageid;
     private String filetype;
 }

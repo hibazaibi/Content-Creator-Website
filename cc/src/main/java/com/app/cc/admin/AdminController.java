@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -33,5 +34,17 @@ public class AdminController {
         List<User> pendingUsers = userRepository.findByActiveFalse();
         return new ResponseEntity<>(pendingUsers, HttpStatus.OK);
     }
+    @GetMapping("/all-users")
+    public ResponseEntity<List<User>> listAllUsers() {
+        List<User> activeUsers = userRepository.findByActiveTrue();
+        List<User> pendingUsers = userRepository.findByActiveFalse();
+
+        List<User> allUsers = new ArrayList<>();
+        allUsers.addAll(pendingUsers);
+        allUsers.addAll(activeUsers);
+
+        return new ResponseEntity<>(allUsers, HttpStatus.OK);
+    }
+
 }
 

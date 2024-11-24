@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -34,9 +33,7 @@ public class AuthenticationController {
           @RequestParam(required = false) String nom,
           @RequestParam(required = false) String prenom,
           @RequestParam(required = false) String email,
-
           @RequestParam(required = false) String password,
-
           @RequestParam(required = false) Role role,
           @RequestParam(required = false) String lienInsta,
   @RequestParam(required = false)  String lienTikTok,
@@ -46,7 +43,6 @@ public class AuthenticationController {
           @RequestParam(required = false)   String siteWebEntreprise,
           @RequestParam(required = false)  String secteurActivite ,
           @RequestParam(required = false)  Long numtel,
-
   @RequestParam(required = false) String bio,
 
           @RequestParam(required = false) MultipartFile image){
@@ -86,8 +82,8 @@ public class AuthenticationController {
     return ResponseEntity.ok(serviceuser.authenticate(request));
   }
   @GetMapping("/find/{id}")
-  public ResponseEntity<userinfo> getUserById(@PathVariable("id") Long id){
-      userinfo user= serviceuser.finduserById2(id);
+  public ResponseEntity<UserInfo> getUserById(@PathVariable("id") Long id){
+      UserInfo user= serviceuser.findUserById2(id);
     return new ResponseEntity<>(user, HttpStatus.OK);
   }
   @GetMapping("/findclient/{id}")
@@ -127,8 +123,8 @@ public class AuthenticationController {
     return new ResponseEntity<>(userr, HttpStatus.OK);
   }
   @GetMapping("/users2")
-  public ResponseEntity<List<userinfo>> getAllusers2() throws Exception {
-    List<userinfo> userr = serviceuser.findAllUsers1();
+  public ResponseEntity<List<UserInfo>> getAllusers2() throws Exception {
+    List<UserInfo> userr = serviceuser.findAllUsers1();
     return new ResponseEntity<>(userr, HttpStatus.OK);
   }
   @PostMapping("/forgetpass2")
@@ -197,8 +193,8 @@ public class AuthenticationController {
 
   }
   @GetMapping("/findbymail2/{email}")
-  public ResponseEntity<userinfo> getUserBymail2(@PathVariable("email") String email){
-    userinfo user = serviceuser.finduserByemail2(email);
+  public ResponseEntity<UserInfo> getUserBymail2(@PathVariable("email") String email){
+    UserInfo user = serviceuser.finduserByemail2(email);
 
     return new ResponseEntity<>(user, HttpStatus.OK);
 
