@@ -40,9 +40,22 @@ public class OffreController {
         }
     }
     @GetMapping("/find2/{id}")
-    public ResponseEntity<Offre> getOfferByuserid(@PathVariable("id") Long id) {
+    public ResponseEntity<List<OffreInfo> >getOfferByuserid(@PathVariable("id") Long id) {
         try {
-            Offre offre = offreService.findOffreByUserId(id);
+            System.out.println(id);
+            List<OffreInfo> offre = offreService.findOffresByUserId(id);
+            System.out.println(offre);
+            return new ResponseEntity<>(offre, HttpStatus.OK);
+        } catch (OffreNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/find3/{id}")
+    public ResponseEntity<List<OffreInfo> >getOfferBycreatorid(@PathVariable("id") Long id) {
+        try {
+            System.out.println(id);
+            List<OffreInfo> offre = offreService.findOffresBycreatorid(id);
+            System.out.println(offre);
             return new ResponseEntity<>(offre, HttpStatus.OK);
         } catch (OffreNotFoundException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

@@ -1,7 +1,9 @@
 package com.app.cc.offre;
 
 
+import com.app.cc.Client.Client;
 import com.app.cc.Client.ClientRepository;
+import com.app.cc.Createur.Createur;
 import com.app.cc.Createur.CreateurRepository;
 import com.app.cc.email.EmailSender;
 import lombok.RequiredArgsConstructor;
@@ -70,9 +72,48 @@ public class OffreService {
         return offreRepository.findById(id)
                 .orElseThrow(() -> new OffreNotFoundException("Offer with ID " + id + " not found"));
     }
-    public Offre findOffreByUserId(Long id) {
-        return offreRepository.findByUseridoffre(id)
-                .orElseThrow(() -> new OffreNotFoundException("Offer with ID " + id + " not found"));
+    public List<OffreInfo> findOffresByUserId(Long userId) {
+        Client client = clientRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Client with ID " + userId + " not found"));
+        List<Offre> offres = offreRepository.findByUseridoffre(client);
+
+        if (offres.isEmpty()) {
+            throw new OffreNotFoundException("No offers found for user with ID " + userId);
+        }
+
+        return offres.stream()
+                .map(this::mapToOffreInfo)
+                .toList();
+    }
+    public List<OffreInfo> findOffresBycreatorid(Long userId) {
+        Createur createur = createurRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Client with ID " + userId + " not found"));
+        List<Offre> offres = offreRepository.findByIdcreateur(createur);
+
+        if (offres.isEmpty()) {
+            throw new OffreNotFoundException("No offers found for user with ID " + userId);
+        }
+
+        return offres.stream()
+                .map(this::mapToOffreInfo)
+                .toList();
+    }
+
+    private OffreInfo mapToOffreInfo(Offre offre) {
+        return OffreInfo.builder()
+                .idOffre(offre.getIdOffre())
+                .description(offre.getDescription())
+                .budget(offre.getBudget())
+                .status(offre.getStatus().toString())
+                .dateSoumission(offre.getDateSoumission())
+                .Deadline(offre.getDeadline())
+                .collaborationDetails(offre.getCollaborationDetails())
+                .specialRequests(offre.getSpecialRequests())
+                .useridoffre(offre.getUseridoffre().getId())
+                .idcreateur(offre.getIdcreateur().getId())
+                .expirationDate(offre.getExpirationDate())
+                .nameclient(offre.getUseridoffre().getNom())
+                .build();
     }
 
     public void deleteOffreById(Long id) throws Exception {
