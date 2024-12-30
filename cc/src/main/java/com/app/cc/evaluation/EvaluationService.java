@@ -1,6 +1,5 @@
 package com.app.cc.evaluation;
 
-import com.app.cc.Client.Client;
 import com.app.cc.Createur.Createur;
 import com.app.cc.offre.Offre;
 import com.app.cc.offre.OffreRepository;
@@ -12,61 +11,55 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class EvaluationService {
+public class  EvaluationService {
     private final EvaluationRepository evaluationRepository;
     private final UserRepository userRepository;
     private final OffreRepository offreRepository;
-    public EvaluationResponse addEvaluation(EvaluationRequest request) throws Exception {
-        Optional<Offre> offerOpt = offreRepository.findById(request.getOfferId());
-        if (offerOpt.isEmpty()) {
-            throw new Exception("Offre not found");
-        }
-
-        Offre offer = offerOpt.get();
+    public EvaluationResponse addEvaluation(Long OfferId,EvaluationRequest request) throws Exception {
+        Offre offer = offreRepository.findById(OfferId).orElseThrow(() -> new Exception("OFFER not found"));;
         if (offer.getStatus() != OffreStatus.TERMINEE) {
             throw new Exception("You can only evaluate after the offer is completed");
         }
-
-        Optional<User> clientOpt = userRepository.findById(request.getClientId());
-        if (clientOpt.isEmpty() || !clientOpt.get().getRole().equals(Role.CLIENT)) {
-            throw new Exception("Client not found or invalid");
-        }
-        Client client = (Client) clientOpt.get();
-
-        Optional<User> creatorOpt = userRepository.findById(request.getCreatorId());
-        if (creatorOpt.isEmpty() || !creatorOpt.get().getRole().equals(Role.CREATOR)) {
-            throw new Exception("Creator not found or invalid");
-        }
-        Createur createur = (Createur) creatorOpt.get();
+        if (offer.useridoffre.getRole().equals(Role.CLIENT)) {
 
         Evaluation evaluation = Evaluation.builder()
-                .client(client)
-                .createur(createur)
                 .offre(offer)
                 .rating(request.getRating())
                 .feedback(request.getFeedback())
                 .dateEvaluated(LocalDateTime.now())
                 .build();
 
+
         evaluationRepository.save(evaluation);
 
-        return new EvaluationResponse(evaluation.getIdevaluation(), evaluation.getRating(), evaluation.getFeedback());
+            User creator = offer.getIdcreateur();
+            if (creator == null) {
+                throw new Exception("Creator not found for the offer");
+            }
+            offer.setIsev(true);
+            offreRepository.save(offer);
+            creator.setTotalRatings(creator.getTotalRatings() + request.getRating());
+            creator.setNumberOfRatings(creator.getNumberOfRatings() + 1);
+            userRepository.save(creator);
+            return new EvaluationResponse(evaluation.getIdevaluation(), evaluation.getRating(), evaluation.getFeedback());
+        } else { throw new Exception("Only Client can evaluate the offre"); }
     }
+    public List<String> getFeedbackForOffer(Long idOffre) {
+        List<Evaluation> evaluations = evaluationRepository.findByOffreIdOffre(idOffre);
+        List<String> feedbacks = new ArrayList<>();
 
-    public List<Evaluation> getEvaluationsByCreator(Long creatorId) throws Exception {
-        Optional<User> creatorOpt = userRepository.findById(creatorId);
-        if (creatorOpt.isEmpty() || !(creatorOpt.get() instanceof Createur)) {
-            throw new Exception("Creator not found or is not a valid creator");
+        // Collect the feedback from evaluations
+        for (Evaluation evaluation : evaluations) {
+            feedbacks.add(evaluation.getFeedback());
         }
 
-        Createur creator = (Createur) creatorOpt.get();
-
-        return evaluationRepository.findByCreateur(creator);
+        return feedbacks;
     }
 }
 

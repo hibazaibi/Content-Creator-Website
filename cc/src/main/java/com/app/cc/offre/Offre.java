@@ -29,9 +29,12 @@ public class Offre {
     @Column(nullable = false)
     private OffreStatus status;
 
+    
+
+    private boolean isev = false ;
     private LocalDateTime dateSoumission;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date Deadline;
+    private Date deadline;
     private String collaborationDetails;
     private String specialRequests;
     @ManyToOne

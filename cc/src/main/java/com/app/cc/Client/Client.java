@@ -24,7 +24,6 @@ public class Client extends User {
     private String nomEntreprise;
     private String siteWebEntreprise;
     private String secteurActivite;
-    @OneToMany(mappedBy = "client")
-    private List<Evaluation> evaluations;
+
 
 }

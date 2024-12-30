@@ -6,12 +6,17 @@ import com.app.cc.Client.ClientRepository;
 import com.app.cc.Createur.Createur;
 import com.app.cc.Createur.CreateurRepository;
 import com.app.cc.email.EmailSender;
+import com.app.cc.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -38,7 +43,7 @@ public class OffreService {
                     .status(OffreStatus.EN_ATTENTE)
                     .dateSoumission(LocalDateTime.now())
                     .expirationDate(expirationDate)
-                    .Deadline(request.getDeadline())
+                    .deadline(request.getDeadline())
                     .collaborationDetails(request.getCollaborationDetails())
                     .specialRequests(request.getSpecialRequests())
                     .useridoffre(userOpt.get())
@@ -53,7 +58,7 @@ public class OffreService {
                     .status(offer.getStatus())
                     .dateSoumission(offer.getDateSoumission())
                     .expirationDate(offer.getExpirationDate())
-                    .Deadline(offer.getDeadline())
+                    .deadline(offer.getDeadline())
                     .collaborationDetails(offer.getCollaborationDetails())
                     .specialRequests(offer.getSpecialRequests())
                     .useridoffre(offer.getUseridoffre().getEmail())
@@ -106,13 +111,14 @@ public class OffreService {
                 .budget(offre.getBudget())
                 .status(offre.getStatus().toString())
                 .dateSoumission(offre.getDateSoumission())
-                .Deadline(offre.getDeadline())
+                .deadline(offre.getDeadline())
                 .collaborationDetails(offre.getCollaborationDetails())
                 .specialRequests(offre.getSpecialRequests())
                 .useridoffre(offre.getUseridoffre().getId())
                 .idcreateur(offre.getIdcreateur().getId())
                 .expirationDate(offre.getExpirationDate())
                 .nameclient(offre.getUseridoffre().getNom())
+                .isev(offre.isIsev())
                 .build();
     }
 
@@ -121,6 +127,46 @@ public class OffreService {
                 .orElseThrow(() -> new OffreNotFoundException("Offer with ID: " + id + " not found"));
         offreRepository.deleteById(id);
     }
+    public Offre updateOffer(Long offerId, OffreRequest updatedRequest) throws Exception {
+        Offre offer = findOffreById(offerId);
+
+        if (offer.getStatus() != OffreStatus.EN_ATTENTE) {
+            throw new Exception("Offer cannot be updated as it is no longer in pending status.");
+        }
+
+        if (updatedRequest.getDescription() != null) {
+            offer.setDescription(updatedRequest.getDescription());
+            System.out.println("Updated description to: " + updatedRequest.getDescription());
+        }
+
+        if (updatedRequest.getBudget() != null) {
+            offer.setBudget(updatedRequest.getBudget());
+            System.out.println("Updated budget to: " + updatedRequest.getBudget());
+        }
+
+        if (updatedRequest.getDeadline() != null) {
+            offer.setDeadline(updatedRequest.getDeadline());
+            System.out.println("Updated deadline to: " + updatedRequest.getDeadline());
+        }
+
+        if (updatedRequest.getCollaborationDetails() != null) {
+            offer.setCollaborationDetails(updatedRequest.getCollaborationDetails());
+            System.out.println("Updated collaborationDetails to: " + updatedRequest.getCollaborationDetails());
+        }
+
+        if (updatedRequest.getSpecialRequests() != null) {
+            offer.setSpecialRequests(updatedRequest.getSpecialRequests());
+            System.out.println("Updated specialRequests to: " + updatedRequest.getSpecialRequests());
+        }
+
+        // Check for any other fields specific to the Offre model that might need updating
+        // (similar to how you handled image updates in the user method, if applicable)
+
+        Offre savedOffer = offreRepository.save(offer);
+        System.out.println("Saved offer: " + savedOffer);
+        return savedOffer;
+    }
+
 
     public void checkExpiredOffers() {
         List<Offre> offers = offreRepository.findAll();
@@ -208,7 +254,81 @@ public class OffreService {
 
         return offer;
     }
+    public long countAllOffers() {
+        return offreRepository.count();
+    }
+    public Map<String, Long> getOfferStatusCounts() {
+        Map<String, Long> counts = new HashMap<>();
+        counts.put("PENDING", offreRepository.countByStatus(OffreStatus.EN_ATTENTE));
+        counts.put("ACCEPTED", offreRepository.countByStatus(OffreStatus.ACCEPTEE));
+        counts.put("DECLINED", offreRepository.countByStatus(OffreStatus.REFUSEE));
+        counts.put("COMPLETED", offreRepository.countByStatus(OffreStatus.TERMINEE));
+        counts.put("EXPIRED", offreRepository.countByStatus(OffreStatus.EXPIRE));
+        return counts;
+    }
+    public Double getAverageBudget() {
+        return offreRepository.calculateAverageBudget();
+    }
+    public Map<String, Long> getOffersGroupedByMonth() {
+        Map<String, Long> monthlyOfferCounts = new HashMap<>();
+        List<Offre> allOffers = offreRepository.findAll();
+        for (Offre offer : allOffers) {
+            String monthYear = offer.getDateSoumission().getMonth().toString() + " " + offer.getDateSoumission().getYear();
+            monthlyOfferCounts.put(monthYear, monthlyOfferCounts.getOrDefault(monthYear, 0L) + 1);
+        }
+        return monthlyOfferCounts;
+    }
+    public List<Offre> getOffersForClient(Long clientId) {
+        return offreRepository.findByUseridoffreId(clientId);
+    }
 
+    // Get total budget for offers submitted by a specific client
+    public Double getTotalBudgetForClient(Long clientId) {
+        return offreRepository.calculateTotalBudgetByClientId(clientId);
+    }
 
+    // Get offer counts by status for a specific client
+    public Map<String, Long> getOfferStatusCountsForClient(Long clientId) {
+        Map<String, Long> counts = new HashMap<>();
+        counts.put("PENDING", offreRepository.countByUseridoffreIdAndStatus(clientId, OffreStatus.EN_ATTENTE));
+        counts.put("ACCEPTED", offreRepository.countByUseridoffreIdAndStatus(clientId, OffreStatus.ACCEPTEE));
+        counts.put("DECLINED", offreRepository.countByUseridoffreIdAndStatus(clientId, OffreStatus.REFUSEE));
+        counts.put("COMPLETED", offreRepository.countByUseridoffreIdAndStatus(clientId, OffreStatus.TERMINEE));
+        counts.put("EXPIRED", offreRepository.countByUseridoffreIdAndStatus(clientId, OffreStatus.EXPIRE));
+        return counts;
+    }
+    public long getTotalOffersForCreator(Long creatorId) {
+        return offreRepository.countByIdcreateurId(creatorId);
+    }
+    public Map<String, Long> getOfferStatusCountsForCreator(Long creatorId) {
+        Map<String, Long> counts = new HashMap<>();
+        counts.put("PENDING", offreRepository.countByIdcreateurIdAndStatus(creatorId, OffreStatus.EN_ATTENTE));
+        counts.put("ACCEPTED", offreRepository.countByIdcreateurIdAndStatus(creatorId, OffreStatus.ACCEPTEE));
+        counts.put("DECLINED", offreRepository.countByIdcreateurIdAndStatus(creatorId, OffreStatus.REFUSEE));
+        counts.put("COMPLETED", offreRepository.countByIdcreateurIdAndStatus(creatorId, OffreStatus.TERMINEE));
+        counts.put("EXPIRED", offreRepository.countByIdcreateurIdAndStatus(creatorId, OffreStatus.EXPIRE));
+        return counts;
+    }
+    public Double getAverageBudgetForCreator(Long creatorId) {
+        return offreRepository.calculateAverageBudgetForCreator(creatorId);
+    }
+    public Double getTotalEarningsForCreator(Long creatorId) {
+        return offreRepository.calculateTotalBudgetByCreatorIdAndStatus(creatorId, OffreStatus.ACCEPTEE);
+    }
+    public double getCreatorAverageRating(Long creatorId) {
+        Createur creator = createurRepository.findById(creatorId)
+                .orElseThrow(() -> new RuntimeException("Creator not found"));
+        return creator.getAverageRating();
+    }
+
+    public String getImprovementSuggestionsForCreator(Long creatorId) {
+        double averageRating = getCreatorAverageRating(creatorId);
+        if (averageRating < 3) {
+            return "Consider improving communication and adhering to deadlines.";
+        } else if (averageRating < 4) {
+            return "You are doing well! Focus on enhancing the client experience to achieve higher ratings.";
+        }
+        return "Excellent work! Keep maintaining your quality to sustain high ratings.";
+    }
 }
 

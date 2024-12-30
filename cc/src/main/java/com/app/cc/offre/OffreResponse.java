@@ -22,7 +22,7 @@ public class OffreResponse {
     private OffreStatus status;
     private String idcreateur ;
     private LocalDateTime expirationDate;
-    private Date Deadline;
+    private Date deadline;
     private String collaborationDetails;
     private String specialRequests;
 

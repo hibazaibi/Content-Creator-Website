@@ -22,12 +22,6 @@ public class Evaluation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idevaluation;
     @ManyToOne
-    private Client client;
-
-    @ManyToOne
-    private Createur createur;
-
-    @ManyToOne
     @JoinColumn(name = "offer_id")
     private Offre offre;
     private int rating;

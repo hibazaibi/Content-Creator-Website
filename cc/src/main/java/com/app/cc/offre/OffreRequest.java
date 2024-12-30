@@ -18,7 +18,7 @@ public class OffreRequest {
     private Long useridoffre;
     private LocalDateTime dateSoumission;
     private OffreStatus status;
-private Date Deadline;
+private Date deadline;
     private Long idcreateur ;
     private String collaborationDetails;
     private String specialRequests;

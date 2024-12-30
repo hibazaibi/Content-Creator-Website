@@ -28,7 +28,7 @@ public class OffreInfo {
 
     private LocalDateTime dateSoumission;
 
-    private Date Deadline;
+    private Date deadline;
     private String collaborationDetails;
     private String specialRequests;
 
@@ -36,6 +36,6 @@ public class OffreInfo {
 public String nameclient ;
     private Long idcreateur ;
     private LocalDateTime expirationDate;
-
+private boolean isev ;
 
 }

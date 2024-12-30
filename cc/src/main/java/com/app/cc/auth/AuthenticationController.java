@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -86,9 +87,17 @@ public class AuthenticationController {
       UserInfo user= serviceuser.findUserById2(id);
     return new ResponseEntity<>(user, HttpStatus.OK);
   }
-  @GetMapping("/creators")
+  @GetMapping("/creators2")
   public ResponseEntity<List<Createur>> getAllCreators() {
     List<Createur> creators = serviceuser.getAllCreators();
+    if (creators.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<>(creators, HttpStatus.OK);
+  }
+  @GetMapping("/creators")
+  public ResponseEntity<List<UserInfo>> getAllCreators2() {
+    List<UserInfo> creators = serviceuser.getAllCreators2();
     if (creators.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -207,7 +216,24 @@ public class AuthenticationController {
     return new ResponseEntity<>(user, HttpStatus.OK);
 
   }
+  @GetMapping("/totalUsers")
+  public long getTotalUsers() {
+    return serviceuser.countAllUsers();
+  }
 
+  @GetMapping("/totalClients")
+  public long getTotalClients() {
+    return serviceuser.countClients();
+  }
+
+  @GetMapping("/totalCreators")
+  public long getTotalCreators() {
+    return serviceuser.countCreators();
+  }
+  @GetMapping("/user-activity")
+  public ResponseEntity<Map<String, Long>> getUserActivity() {
+    return ResponseEntity.ok(serviceuser.getUserActivityCounts());
+  }
   }
 
 

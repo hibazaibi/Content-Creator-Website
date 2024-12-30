@@ -49,7 +49,14 @@ public class User implements UserDetails {
   @OneToMany(mappedBy = "user")
   @JsonManagedReference
   private List<Token> tokens;
+  @Column(name = "total_ratings", nullable = false)
+  private int totalRatings = 0;
 
+  @Column(name = "number_of_ratings", nullable = false)
+  private int numberOfRatings = 0;
+  public double getAverageRating() {
+    return numberOfRatings == 0 ? 0 : totalRatings / numberOfRatings;
+  }
 
 
   @Override

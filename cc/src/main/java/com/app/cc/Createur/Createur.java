@@ -25,8 +25,7 @@ public class Createur extends User {
     private String lienInsta;
     private String lienTikTok;
     private String categoriesContenu;
-    @OneToMany(mappedBy = "createur")
-    private List<Evaluation> evaluations;
+
 
 
 

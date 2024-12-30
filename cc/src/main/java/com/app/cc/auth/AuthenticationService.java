@@ -24,9 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -204,6 +202,41 @@ private String idimage;
     return createurRepository.findAllCreators();
   }
 
+
+  public List<UserInfo> getAllCreators2() {
+    List<Createur> users = createurRepository.findAllCreators();
+    if (users.isEmpty()) {
+      throw new UserNotFoundException("No users found.");
+    }
+    List<UserInfo> userinfos= new ArrayList<>();
+    for (Createur user : users) {
+      UserInfo userinfo = new UserInfo();
+      userinfo.setId(user.getId());
+      userinfo.setNom(user.getNom());
+      userinfo.setPrenom(user.getPrenom());
+      userinfo.setEmail(user.getEmail());
+      userinfo.setLienInsta(user.getLienInsta());
+      userinfo.setLienTikTok(user.getLienTikTok());
+      userinfo.setCategoriesContenu(user.getCategoriesContenu());
+      userinfo.setBio(user.getBio());
+      userinfo.setPassword(user.getPassword());
+      userinfo.setRole(user.getRole());
+      if(user.getNumberOfRatings()==0)
+      {
+        userinfo.setAvgrattings(0.0);
+      }else{
+      userinfo.setAvgrattings((double) (user.getTotalRatings()/user.getNumberOfRatings()));}
+      if (user.getImage()!=null){
+        userinfo.setImage(user.getImage());
+
+      }
+
+      userinfos.add(userinfo);
+    }
+
+    return userinfos;
+  }
+
   public forgetpassresponse forgetPassword(forgetpassrequest request) throws Exception {
     User user = repository.findByEmail(request.getEmail())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -255,10 +288,7 @@ private String idimage;
 
       userinfo.setPassword(user.getPassword());
       userinfo.setRole(user.getRole());
-        if (user.getImage()!=null){
-            userinfo.setImageid(user.getImage().getId());
-            userinfo.setFiletype(user.getImage().getFileType());
-        }
+
 
         userinfos.add(userinfo);
     }
@@ -360,11 +390,13 @@ private String idimage;
     userInfo.setEmail(user.getEmail());
     userInfo.setPassword(user.getPassword());
     userInfo.setRole(user.getRole());
+    userInfo.setNumtel(user.getNumtel());
+userInfo.setDateNaissance(user.getDateNaissance());
+    if (user.getImage()!=null){
+      userInfo.setImage(user.getImage());
 
-    if (user.getImage() != null) {
-      userInfo.setImageid(user.getImage().getId());
-      userInfo.setFiletype(user.getImage().getFileType());
     }
+
 
     if (user instanceof Createur) {
       Createur creator = (Createur) user;
@@ -395,11 +427,32 @@ private String idimage;
     user.setPrenom(user1.getPrenom());
     user.setEmail(user1.getEmail());
     user.setPassword(user1.getPassword());
+    user.setNumtel(user.getNumtel());
+    user.setDateNaissance(user.getDateNaissance());
     user.setRole(user1.getRole());
-    user.setImageid(user1.getImage().getId());
-      user.setFiletype(user1.getImage().getFileType());
 
     return user;
+  }
+  public long countAllUsers() {
+    return repository.count();
+  }
+
+  public long countClients() {
+    return repository.countByRole(Role.CLIENT);
+  }
+
+  public long countCreators() {
+    return repository.countByRole(Role.CREATOR);
+  }
+  public Map<String, Long> getUserActivityCounts() {
+    Long activeUsers = repository.countActiveUsers();
+    Long inactiveUsers = repository.countInactiveUsers();
+
+    Map<String, Long> activityCounts = new HashMap<>();
+    activityCounts.put("Active", activeUsers);
+    activityCounts.put("Inactive", inactiveUsers);
+
+    return activityCounts;
   }
 
   }

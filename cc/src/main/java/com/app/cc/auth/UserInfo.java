@@ -30,8 +30,7 @@ public class UserInfo {
     private String categoriesContenu;
     private Role role;
     private file image;
+    private Double avgrattings ;
 private Long id;
-    private String imageid;
-    private String filetype;
 }
 

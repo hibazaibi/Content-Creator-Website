@@ -17,28 +17,15 @@ public class EvaluationController {
 
         private final EvaluationService evaluationService;
 
-        @PostMapping("/evaluate")
-        public ResponseEntity<EvaluationResponse> addEvaluation(@RequestBody EvaluationRequest request) {
+        @PostMapping("/evaluate/{id}")
+        public ResponseEntity<EvaluationResponse> addEvaluation(@PathVariable Long id,@RequestBody EvaluationRequest request) {
             try {
-                EvaluationResponse response = evaluationService.addEvaluation(request);
+                EvaluationResponse response = evaluationService.addEvaluation(id,request);
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             } catch (Exception e) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
         }
-    @GetMapping("/creator/{creatorId}")
-    public ResponseEntity<List<EvaluationResponse>> getEvaluationsForCreator(@PathVariable Long creatorId) {
-        try {
-            List<Evaluation> evaluations = evaluationService.getEvaluationsByCreator(creatorId);
 
-            List<EvaluationResponse> response = evaluations.stream()
-                    .map(evaluation -> new EvaluationResponse(evaluation.getIdevaluation(),evaluation.getRating(), evaluation.getFeedback()))
-                    .collect(Collectors.toList());
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-    }
 
 }
