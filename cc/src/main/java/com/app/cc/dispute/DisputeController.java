@@ -1,12 +1,14 @@
 package com.app.cc.dispute;
 
 
+import com.app.cc.auth.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -17,14 +19,14 @@ import java.util.List;
 public class DisputeController {
     @Autowired
     private final DisputeService disputeService;
-
+    private final AuthenticationService userService;
     @PostMapping("/create")
     public ResponseEntity<Dispute> createDispute(@RequestBody DisputeRequest request) {
         try {
             Long offerId = request.getOfferId();
-            Long userId = request.getClientId() != null ? request.getClientId() : request.getCreatorId();
+            Long userId = request.getUserId();
             String reason = request.getRaison();
-            String details = "Additional details can be added here";
+            String details = request.getDetailsresolution();
 
             Dispute dispute = disputeService.createDispute(offerId, userId, reason, details);
             return new ResponseEntity<>(dispute, HttpStatus.CREATED);
@@ -33,6 +35,8 @@ public class DisputeController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+
 
     @GetMapping("/all")
     public ResponseEntity<List<Dispute>> getAllDisputes() {

@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DisputeRequest {
-    private Long clientId;
-    private Long creatorId;
+    private Long userId;
+
     private Long offerId;
     private String raison;
     private String Detailsresolution;

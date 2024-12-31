@@ -29,30 +29,23 @@ public class DisputeService {
     @Autowired
     private final OffreRepository offreRepository;
 
-    public Dispute createDispute(Long offerId, Long userId, String reason, String details) throws Exception {
+    public Dispute createDispute(Long offerId, Long requesterId, String reason, String details) throws Exception {
         Offre offer = offreRepository.findById(offerId)
                 .orElseThrow(() -> new Exception("Offer not found"));
-
-        User user = userRepository.findById(userId)
+        User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new Exception("User not found"));
 
-        boolean isClient = user instanceof Client;
-        boolean isCreator = user instanceof Createur;
+        boolean isClient = offer.getUseridoffre().getId().equals(requesterId);
+        boolean isCreator = offer.getIdcreateur().getId().equals(requesterId);
 
         if (!isClient && !isCreator) {
-            throw new Exception("User must be either a client or creator");
-        }
-
-        if (isClient && !offer.getUseridoffre().getId().equals(userId)) {
-            throw new Exception("Client not associated with this offer");
-        } else if (isCreator && !offer.getIdcreateur().getId().equals(userId)) {
-            throw new Exception("Creator not associated with this offer");
+            throw new Exception("Requester is not associated with this offer");
         }
 
         Dispute dispute = Dispute.builder()
                 .offer(offer)
-                .client(isClient ? (Client) user : null)
-                .creator(isCreator ? (Createur) user : null)
+                .client(isClient ? (Client) requester : null)
+                .creator(isCreator ? (Createur) requester : null)
                 .raison(reason)
                 .Detailsresolution(details)
                 .status(DisputeStatus.OUVERT)
@@ -82,32 +75,30 @@ public class DisputeService {
 
         return disputeRepository.save(dispute);
     }
-
     private void notifyResolution(Dispute dispute) throws MessagingException {
         EmailSender emailSender = new EmailSender();
 
         if (dispute.getClient() != null) {
             emailSender.sendEmail(dispute.getClient().getEmail(),
-                    "Conflit Résolu",
-                    "Cher(e) " + dispute.getClient().getNom() + ",\n\n" +
-                            "Nous avons le plaisir de vous informer que votre réclamation concernant l'offre ID : " + dispute.getOffer().getIdOffre() +
-                            " a été résolu.\n\n" +
-                            "Nous vous remercions de votre patience pendant le processus de résolution. " +
-                            "Si vous avez des questions ou des préoccupations supplémentaires, n'hésitez pas à nous contacter.\n\n" +
-                            "Cordialement,\nL'équipe d'administration");
+                    "Dispute Resolved",
+                    "Dear " + dispute.getClient().getNom() + ",\n\n" +
+                            "We are pleased to inform you that your complaint regarding the offer number: " + dispute.getOffer().getIdOffre() + " has been resolved.\n\n" +
+                            "Thank you for your patience during the resolution process.\n\n" +
+                            "If you have any further questions or concerns, please feel free to contact us.\n\n" +
+                            "Sincerely,\nThe Admin Team");
         }
 
         if (dispute.getCreator() != null) {
             emailSender.sendEmail(dispute.getCreator().getEmail(),
-                    "Conflit Résolu",
-                    "Cher(e) " + dispute.getCreator().getNom() + ",\n\n" +
-                            "Nous vous informons que la réclamation concernant votre travail sur l'offre ID : " + dispute.getOffer().getIdOffre() +
-                            " a été résolu.\n\n" +
-                            "Nous vous remercions pour votre collaboration et compréhension. " +
-                            "N'hésitez pas à nous contacter si vous avez des questions ou des préoccupations.\n\n" +
-                            "Cordialement,\nL'équipe d'administration");
+                    "Dispute Resolved",
+                    "Dear " + dispute.getCreator().getNom() + ",\n\n" +
+                            "We would like to inform you that the complaint regarding your work on offer number: " + dispute.getOffer().getIdOffre() + " has been resolved.\n\n" +
+                            "Thank you for your collaboration and understanding.\n\n" +
+                            "Please don't hesitate to contact us if you have any questions or concerns.\n\n" +
+                            "Sincerely,\nThe Admin Team");
         }
     }
+
 
 
     public List<Dispute> getAllDisputes() {

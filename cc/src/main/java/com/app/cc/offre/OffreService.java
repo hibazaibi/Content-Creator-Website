@@ -189,14 +189,14 @@ public class OffreService {
             EmailSender emailSender = new EmailSender();
 
             String clientEmail = offer.getUseridoffre().getEmail();
-            String subject = "Votre offre a été acceptée par " + offer.getIdcreateur().getNom();
-            String text = "Cher(e) " + offer.getUseridoffre().getNom() + ",\n\n" +
-                    "Nous avons le plaisir de vous informer que votre offre a été acceptée par le créateur de contenu, " + offer.getIdcreateur().getNom() + ". Voici les détails de l'offre :\n\n" +
-                    "Description de l'offre : " + offer.getDescription() + "\n" +
-                    "Budget proposé : " + offer.getBudget() + " EUR\n" +
-                    "Créateur de contenu : " + offer.getIdcreateur().getNom() + "\n\n" +
-                    "Nous vous remercions de la confiance que vous nous accordez. Vous pouvez maintenant contacter le créateur pour poursuivre la collaboration. N’hésitez pas à nous contacter si vous avez des questions supplémentaires.\n\n" +
-                    "Cordialement,\nL'équipe d'administration";
+            String subject = "Your offer has been accepted by " + offer.getIdcreateur().getNom();
+            String text = "Dear " + offer.getUseridoffre().getNom() + ",\n\n" +
+                    "We are pleased to inform you that your offer has been accepted by the content creator, " + offer.getIdcreateur().getNom() + ". Here are the details of the offer:\n\n" +
+                    "Offer description: " + offer.getDescription() + "\n" +
+                    "Proposed budget: " + offer.getBudget() + " EUR\n" +
+                    "Content creator: " + offer.getIdcreateur().getNom() + "\n\n" +
+                    "Thank you for placing your trust in us. You can now contact the creator to continue the collaboration. Feel free to reach out to us if you have any further questions.\n\n" +
+                    "Best regards,\nThe Administration Team";
             emailSender.sendEmail(clientEmail, subject, text);
 
         } else {
@@ -215,15 +215,14 @@ public class OffreService {
 
             EmailSender emailSender = new EmailSender();
             String clientEmail = offer.getUseridoffre().getEmail();
-            String subject = "Votre offre a été refusée par " + offer.getIdcreateur().getNom();
-            String text = "Cher(e) " + offer.getUseridoffre().getNom() + ",\n\n" +
-                    "Nous regrettons de vous informer que votre offre a été refusée par le créateur de contenu, " + offer.getIdcreateur().getNom() + ". Voici les détails de l'offre refusée :\n\n" +
-                    "Description de l'offre : " + offer.getDescription() + "\n" +
-                    "Budget proposé : " + offer.getBudget() + " EUR\n" +
-                    "Créateur de contenu : " + offer.getIdcreateur().getNom() + "\n\n" +
-                    "Nous comprenons que cela puisse être décevant. N'hésitez pas à soumettre une nouvelle offre ou à explorer d'autres créateurs disponibles sur notre plateforme.\n\n" +
-                    "Cordialement,\nL'équipe d'administration";
-
+            String subject = "Your offer has been declined by " + offer.getIdcreateur().getNom();
+            String text = "Dear " + offer.getUseridoffre().getNom() + ",\n\n" +
+                    "We regret to inform you that your offer has been declined by the content creator, " + offer.getIdcreateur().getNom() + ". Here are the details of the declined offer:\n\n" +
+                    "Offer description: " + offer.getDescription() + "\n" +
+                    "Proposed budget: " + offer.getBudget() + " EUR\n" +
+                    "Content creator: " + offer.getIdcreateur().getNom() + "\n\n" +
+                    "We understand this may be disappointing. Feel free to submit a new offer or explore other available creators on our platform.\n\n" +
+                    "Best regards,\nThe Administration Team";
             emailSender.sendEmail(clientEmail, subject, text);
         } else {
             throw new Exception("L'offre n'est pas dans un état en attente");
@@ -240,11 +239,11 @@ public class OffreService {
 
             EmailSender emailSender = new EmailSender();
             String clientEmail = offer.getUseridoffre().getEmail();
-            String subject = "Votre offre a été complétée par " + offer.getIdcreateur().getNom();
-            String text = "Cher(e) " + offer.getUseridoffre().getNom() + ",\n\n" +
-                    "Le créateur de contenu " + offer.getIdcreateur().getNom() + " a complété votre offre.\n" +
-                    "Vous pouvez maintenant évaluer sa performance.\n\n" +
-                    "Cordialement,\nL'équipe d'administration";
+            String subject = "Your offer has been completed by " + offer.getIdcreateur().getNom();
+            String text = "Dear " + offer.getUseridoffre().getNom() + ",\n\n" +
+                    "The content creator " + offer.getIdcreateur().getNom() + " has completed your offer.\n" +
+                    "You can now evaluate their performance.\n\n" +
+                    "Best regards,\nThe Administration Team";
 
             emailSender.sendEmail(clientEmail, subject, text);
 
@@ -282,12 +281,10 @@ public class OffreService {
         return offreRepository.findByUseridoffreId(clientId);
     }
 
-    // Get total budget for offers submitted by a specific client
     public Double getTotalBudgetForClient(Long clientId) {
         return offreRepository.calculateTotalBudgetByClientId(clientId);
     }
 
-    // Get offer counts by status for a specific client
     public Map<String, Long> getOfferStatusCountsForClient(Long clientId) {
         Map<String, Long> counts = new HashMap<>();
         counts.put("PENDING", offreRepository.countByUseridoffreIdAndStatus(clientId, OffreStatus.EN_ATTENTE));
