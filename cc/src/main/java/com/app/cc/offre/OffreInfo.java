@@ -31,7 +31,7 @@ public class OffreInfo {
     private Date deadline;
     private String collaborationDetails;
     private String specialRequests;
-
+    public String  namecreateur;
     public Long useridoffre;
 public String nameclient ;
     private Long idcreateur ;

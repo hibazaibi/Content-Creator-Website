@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class AuthenticationController {
           @RequestParam(required = false) String lienInsta,
   @RequestParam(required = false)  String lienTikTok,
   @RequestParam(required = false)  String categoriesContenu,
-          @RequestParam(required = false)  LocalDate dateNaissance,
+          @RequestParam(required = false)  String dateNaissance,
           @RequestParam(required = false)   String nomEntreprise,
           @RequestParam(required = false)   String siteWebEntreprise,
           @RequestParam(required = false)  String secteurActivite ,
@@ -56,7 +57,6 @@ public class AuthenticationController {
               .email(email)
               .bio(bio)
               .image(pdp)
-              .dateNaissance(dateNaissance)
               .numtel(numtel)
               .lienInsta(lienInsta)
               .lienTikTok(lienTikTok)
@@ -65,6 +65,7 @@ public class AuthenticationController {
               .nomEntreprise(nomEntreprise)
               .categoriesContenu(categoriesContenu)
               .password(password)
+             .dateNaissance(LocalDate.parse(dateNaissance, DateTimeFormatter.ISO_LOCAL_DATE))
               .role(role)
               .build();
       registerresponse saved = serviceuser.register(request);

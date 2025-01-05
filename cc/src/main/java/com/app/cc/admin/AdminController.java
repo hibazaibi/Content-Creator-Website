@@ -28,6 +28,15 @@ public class AdminController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+    @PutMapping("/desactivate/{userId}")
+    public ResponseEntity<String> desactivateUser(@PathVariable Long userId) {
+        try {
+            userService.desactivateUser(userId);
+            return new ResponseEntity<>("User deactivated successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 
     @GetMapping("/pending-accounts")
     public ResponseEntity<List<User>> listPendingUsers() {

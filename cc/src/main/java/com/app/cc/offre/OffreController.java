@@ -28,16 +28,21 @@ public class OffreController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping("/all2")
     public ResponseEntity<List<Offre>> getAllOffers() {
         List<Offre> offre = offreService.findAllOffres();
         return new ResponseEntity<>(offre, HttpStatus.OK);
     }
+    @GetMapping("/all")
+    public ResponseEntity<List<OffreInfo>> getAllOffers2() {
+        List<OffreInfo> offre = offreService.findAllOffres2();
+        return new ResponseEntity<>(offre, HttpStatus.OK);
+    }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<Offre> getOfferById(@PathVariable("id") Long id) {
+    public ResponseEntity<OffreInfo> getOfferById(@PathVariable("id") Long id) {
         try {
-            Offre offre = offreService.findOffreById(id);
+            OffreInfo offre = offreService.findOffreById2(id);
             return new ResponseEntity<>(offre, HttpStatus.OK);
         } catch (OffreNotFoundException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -189,10 +194,10 @@ public class OffreController {
 
     @GetMapping("/{creatorId}/feedbacks")
     public ResponseEntity<List<String>> getFeedbacksForCreator(@PathVariable Long creatorId) {
-        // Assuming you have an offerId or need to fetch offers by creatorId
-        List<String> feedbacks = evaluationService.getFeedbackForOffer(creatorId);
+        List<String> feedbacks = evaluationService.getFeedbackForCreator(creatorId);
         return ResponseEntity.ok(feedbacks);
     }
+
 
     @GetMapping("/{creatorId}/improvement-suggestions")
     public ResponseEntity<Map<String, String>> getImprovementSuggestionsForCreator(@PathVariable Long creatorId) {

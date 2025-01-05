@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,17 +49,17 @@ public class  EvaluationService {
             return new EvaluationResponse(evaluation.getIdevaluation(), evaluation.getRating(), evaluation.getFeedback());
         } else { throw new Exception("Only Client can evaluate the offre"); }
     }
-    public List<String> getFeedbackForOffer(Long idOffre) {
-        List<Evaluation> evaluations = evaluationRepository.findByOffreIdOffre(idOffre);
+    public List<String> getFeedbackForCreator(Long creatorId) {
+        List<Evaluation> evaluations = evaluationRepository.findByOffreIdcreateurId(creatorId);
         List<String> feedbacks = new ArrayList<>();
-
-        // Collect the feedback from evaluations
         for (Evaluation evaluation : evaluations) {
             feedbacks.add(evaluation.getFeedback());
         }
-
         return feedbacks;
     }
+
+
+
 }
 
 

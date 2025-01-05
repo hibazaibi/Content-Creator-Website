@@ -73,9 +73,32 @@ public class OffreService {
         return offreRepository.findAll();
     }
 
+
+    public List<OffreInfo> findAllOffres2() {
+
+        List<Offre> offres = offreRepository.findAll();
+
+        if (offres.isEmpty()) {
+            throw new OffreNotFoundException("No offers found ");
+        }
+
+        return offres.stream()
+                .map(this::mapToOffreInfo)
+                .toList();
+
+    }
+
+    public OffreInfo findOffreById2(Long id) {
+        Offre off = offreRepository.findById(id).orElseThrow(() -> new OffreNotFoundException("Offer with ID " + id + " not found"));
+
+
+        return mapToOffreInfo(off) ;
+
+    }
     public Offre findOffreById(Long id) {
         return offreRepository.findById(id)
                 .orElseThrow(() -> new OffreNotFoundException("Offer with ID " + id + " not found"));
+
     }
     public List<OffreInfo> findOffresByUserId(Long userId) {
         Client client = clientRepository.findById(userId)
@@ -117,7 +140,8 @@ public class OffreService {
                 .useridoffre(offre.getUseridoffre().getId())
                 .idcreateur(offre.getIdcreateur().getId())
                 .expirationDate(offre.getExpirationDate())
-                .nameclient(offre.getUseridoffre().getNom())
+                .nameclient(offre.getUseridoffre().getNom()+" "+offre.getUseridoffre().getPrenom() )
+                .namecreateur(offre.getIdcreateur().getNom()+" "+offre.getIdcreateur().getPrenom())
                 .isev(offre.isIsev())
                 .build();
     }
@@ -310,7 +334,7 @@ public class OffreService {
         return offreRepository.calculateAverageBudgetForCreator(creatorId);
     }
     public Double getTotalEarningsForCreator(Long creatorId) {
-        return offreRepository.calculateTotalBudgetByCreatorIdAndStatus(creatorId, OffreStatus.ACCEPTEE);
+        return offreRepository.calculateTotalBudgetByCreatorIdAndStatus(creatorId, OffreStatus.TERMINEE);
     }
     public double getCreatorAverageRating(Long creatorId) {
         Createur creator = createurRepository.findById(creatorId)

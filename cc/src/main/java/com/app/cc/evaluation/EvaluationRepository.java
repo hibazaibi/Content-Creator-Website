@@ -8,4 +8,4 @@ import java.util.List;
 
 @Repository
 public interface EvaluationRepository extends JpaRepository<Evaluation,Long> {
-    List<Evaluation> findByOffreIdOffre(Long idOffre);}
+    List<Evaluation> findByOffreIdcreateurId(Long creatorId); }

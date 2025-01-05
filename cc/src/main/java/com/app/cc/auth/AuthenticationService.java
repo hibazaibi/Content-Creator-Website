@@ -56,6 +56,8 @@ private String idimage;
              .password(passwordEncoder.encode(request.getPassword()))
               .role(Role.CREATOR)
               .bio(request.getBio())
+              .dateNaissance(request.getDateNaissance())
+              .numtel(request.getNumtel())
               .lienInsta(request.getLienInsta())
               .lienTikTok(request.getLienTikTok())
               .categoriesContenu(request.getCategoriesContenu())
@@ -70,6 +72,8 @@ private String idimage;
               .email(request.getEmail())
               .password(passwordEncoder.encode(request.getPassword()))
               .role(Role.CLIENT)
+              .dateNaissance(request.getDateNaissance())
+              .numtel(request.getNumtel())
               .nomEntreprise(request.getNomEntreprise())
               .siteWebEntreprise(request.getSiteWebEntreprise())
               .secteurActivite(request.getSecteurActivite())
@@ -82,6 +86,8 @@ private String idimage;
               .nom(request.getNom())
               .prenom(request.getPrenom())
               .email(request.getEmail())
+              .dateNaissance(request.getDateNaissance())
+              .numtel(request.getNumtel())
               .password(passwordEncoder.encode(request.getPassword()))
               .role(Role.ADMIN)
                .image(request.getImage())
@@ -104,12 +110,21 @@ private String idimage;
   }
 
 
-  public void activateUser(Long userId) throws Exception {
+  public String activateUser(Long userId) throws Exception {
     User user = repository.findById(userId)
             .orElseThrow(() -> new Exception("User not found"));
 
     user.setActive(true);
     repository.save(user);
+    return "User activated successfully" ;
+  }
+  public String desactivateUser(Long userId) throws Exception {
+    User user = repository.findById(userId)
+            .orElseThrow(() -> new Exception("User not found"));
+
+    user.setActive(false);
+    repository.save(user);
+    return "User deactivated successfully" ;
   }
 
 
