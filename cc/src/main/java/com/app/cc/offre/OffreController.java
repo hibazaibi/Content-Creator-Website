@@ -35,7 +35,7 @@ public class OffreController {
     }
     @GetMapping("/all")
     public ResponseEntity<List<OffreInfo>> getAllOffers2() {
-        List<OffreInfo> offre = offreService.findAllOffres2();
+        List<OffreInfo> offre = offreService.findAllOffresSorted();
         return new ResponseEntity<>(offre, HttpStatus.OK);
     }
 

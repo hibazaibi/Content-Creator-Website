@@ -10,6 +10,7 @@ import com.app.cc.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -72,7 +73,17 @@ public class OffreService {
     public List<Offre> findAllOffres() {
         return offreRepository.findAll();
     }
+    public List<OffreInfo> findAllOffresSorted() {
+        List<Offre> offres = offreRepository.findAllSortedByDateSoumission();
 
+        if (offres.isEmpty()) {
+            throw new OffreNotFoundException("No offers found");
+        }
+
+        return offres.stream()
+                .map(this::mapToOffreInfo)
+                .toList();
+    }
 
     public List<OffreInfo> findAllOffres2() {
 
@@ -103,8 +114,7 @@ public class OffreService {
     public List<OffreInfo> findOffresByUserId(Long userId) {
         Client client = clientRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Client with ID " + userId + " not found"));
-        List<Offre> offres = offreRepository.findByUseridoffre(client);
-
+        List<Offre> offres = offreRepository.findByUseridoffre(client, Sort.by(Sort.Direction.DESC, "dateSoumission"));
         if (offres.isEmpty()) {
             throw new OffreNotFoundException("No offers found for user with ID " + userId);
         }
@@ -116,8 +126,7 @@ public class OffreService {
     public List<OffreInfo> findOffresBycreatorid(Long userId) {
         Createur createur = createurRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Client with ID " + userId + " not found"));
-        List<Offre> offres = offreRepository.findByIdcreateur(createur);
-
+        List<Offre> offres = offreRepository.findByIdcreateur(createur, Sort.by(Sort.Direction.DESC, "dateSoumission"));
         if (offres.isEmpty()) {
             throw new OffreNotFoundException("No offers found for user with ID " + userId);
         }
